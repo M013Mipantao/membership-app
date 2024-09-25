@@ -73,8 +73,8 @@
 
             <!-- Submit Section -->
             <div class="d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary" id="send-mail-btn">Previous</button>
-                <button type="submit" class="btn btn-primary">Send Mail to Complete</button>
+                <a type="button" class="btn btn-secondary" href="{{route('flows.step2')}}" >Previous</a>
+                <button type="submit" class="btn btn-primary" id="send-mail-btn">Send Mail to Complete</button>
             </div>
         </form>
     </div>
