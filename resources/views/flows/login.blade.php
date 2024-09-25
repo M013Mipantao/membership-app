@@ -34,23 +34,22 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-user btn-block text-center">
+                                    <button type="submit" class="btn btn-primary btn-user btn-block d-flex justify-content-center">
                                         Login
-                                    </button>
+                                    </button>                                    
                                 </form>
 
                                 <!-- Forgot Password Link -->
                                 <hr>
                                 <div class="text-center">
                                     {{-- {{ route('password.request') }} --}}
-                                    <a class="small" href="">Forgot Password?</a>
+                                    <a class="small" href="{{ route('password.request') }}">Forgot Password?</a>
                                 </div>
 
                                 <!-- Register Link -->
-                                <div class="text-center">
-                                    {{-- {{ route('register') }} --}}
-                                    <a class="small" href="">Create an Account!</a>
-                                </div>
+                                {{-- <div class="text-center">
+                                    <a class="small" href="{{ route('register') }}">Create an Account!</a>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

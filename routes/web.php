@@ -5,6 +5,7 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\WizardController;
 use App\Http\Controllers\Login_Controller;
+use App\Http\Controllers\PasswordController;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Guest;
@@ -80,16 +81,23 @@ Route::middleware(['auth'])->group(function () {
 
 Route::put('/update-qr-code/{guest_id}', [WizardController::class, 'updateQrCode'])->name('update.qr.code');
 
-// LOGIN
+// Login
 Route::get('/login', [Login_Controller::class, 'showLoginForm'])->name('login');
 Route::post('/login', [Login_Controller::class, 'login'])->name('login');
-Route::post('/update-password', [Login_Controller::class, 'updatePassword'])->name('update.password');
-
-// Route::get('/login', [Login_Controller::class, 'showLoginForm'])->name('login');
-// Route::post('/login', [Login_Controller::class, 'login']);
+// Route::post('/update-password', [Login_Controller::class, 'updatePassword'])->name('update.password');
 Route::get('/logout', [Login_Controller::class, 'logout'])->name('logout');
 
-// Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+// Change password routes
+Route::get('/change-password', [PasswordController::class, 'showChangePasswordForm'])->name('update.password');
+Route::post('/change-password', [PasswordController::class, 'changePassword'])->middleware('auth');
+
+// Forgot password and reset routes
+Route::get('/forgot-password', [PasswordController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('password.update');
+
+
 
 // Download
 // use App\Models\QrCode;
