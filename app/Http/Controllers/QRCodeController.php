@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QR_Code;
 use App\Models\Guest;
 use App\Models\Member;
+use App\Models\Transaction;
 use App\Models\QrCode;
 use Illuminate\Support\Facades\DB;
 
@@ -42,7 +43,7 @@ class QRCodeController extends Controller
                 ->first();
     
             if (!$qrCode) {
-                return response()->json(['error' => 'QR code not found.'], 404);
+                return response()->json(['error' => 'QR code not found.']);
             }
     
             // Initialize result and member info
@@ -51,22 +52,81 @@ class QRCodeController extends Controller
     
             if ($qrCode->type === 'member') {
                 // Get member details
-                $result = DB::table('members')
-                    ->where('id', $qrCode->fk_member_guest_qr_id)
-                    ->first();
+                $result = Member::findOrFail($qrCode->fk_member_guest_qr_id);
+    
             } elseif ($qrCode->type === 'guest') {
                 // Get guest details
-                $result = DB::table('guests')
-                    ->where('id', $qrCode->fk_member_guest_qr_id)
-                    ->first();
+                $result = Guest::findOrFail($qrCode->fk_member_guest_qr_id);
     
                 // Fetch associated member information
                 if ($result) {
-                    $memberInfo = DB::table('members')
-                        ->where('id', $result->fk_member_guest_id) // Assuming this field links to the member
-                        ->first();
+                    $memberInfo = Member::findOrFail($result->fk_member_guest_id);
                 }
             }
+    
+            // Check if the QR code is within the valid date range
+            $currentDate = now();
+            $isActive = false;
+    
+            // Case 1: Both startdate and enddate are not null
+            if (!is_null($qrCode->startdate) && !is_null($qrCode->enddate)) {
+                if ($currentDate->gte($qrCode->startdate) && $currentDate->lte($qrCode->enddate)) {
+                    $isActive = true;
+                }
+            }
+            // Case 2: startdate is not null and enddate is null
+            elseif (!is_null($qrCode->startdate) && is_null($qrCode->enddate)) {
+                if ($currentDate->lt($qrCode->startdate)) {
+                    // QR code is not yet active
+                    DB::table('qr_codes')
+                        ->where('qr_code', $code)
+                        ->update(['status' => 'Inactive']);
+    
+                    Transaction::create([
+                        'fk_qr_id' => $qrCode->id,
+                        'created_at' => $currentDate,
+                        'type' => $qrCode->type,
+                        'status' => 'not_yet_active',
+                        'fk_user_id' => "1"
+                    ]);
+    
+                    return response()->json(['error' => 'QR code is not yet active.']);
+                } else {
+                    // QR code is valid if the current date is on or after the startdate
+                    $isActive = true;
+                    // QR code is not yet active
+                    DB::table('qr_codes')
+                    ->where('qr_code', $code)
+                    ->update(['status' => 'Active']);
+                }
+            }
+    
+            // Update QR code status and log transaction based on active status
+            if (!$isActive) {
+                // If inactive, update status to 'Inactive'
+                DB::table('qr_codes')
+                    ->where('qr_code', $code)
+                    ->update(['status' => 'Inactive']);
+    
+                Transaction::create([
+                    'fk_qr_id' => $qrCode->id,
+                    'created_at' => $currentDate,
+                    'type' => $qrCode->type,
+                    'status' => 'invalid',
+                    'fk_user_id' => "1"
+                ]);
+    
+                return response()->json(['error' => 'QR code has expired or is not active.']);
+            }
+    
+            // Log the valid transaction
+            Transaction::create([
+                'fk_qr_id' => $qrCode->id,
+                'created_at' => $currentDate,
+                'type' => $qrCode->type,
+                'status' => 'valid',
+                'fk_user_id' => "1"
+            ]);
     
             // Return response based on the type
             if ($result) {
@@ -85,7 +145,7 @@ class QRCodeController extends Controller
     
                 return response()->json($response);
             } else {
-                return response()->json(['error' => 'Account not found.'], 404);
+                return response()->json(['error' => 'Account not found.']);
             }
         } catch (\Exception $e) {
             // Log the exception message
@@ -93,7 +153,6 @@ class QRCodeController extends Controller
             return response()->json(['error' => 'An error occurred.'], 500);
         }
     }
-    
     
     
 }
