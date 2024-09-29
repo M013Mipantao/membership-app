@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Member;
 use App\Models\Guest;
 use App\Models\QrCode;
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
+use App\Mail\SendQrMail;
 use Symfony\Component\HttpFoundation\Response;
+
+use Illuminate\Support\Facades\Mail;
 
 
 class WizardController extends Controller
@@ -104,18 +107,20 @@ class WizardController extends Controller
 
     public function complete(Request $request)
     {
-     
-        $qr_code_id = session('qr_code_id');   
+
+        $qr_code_id = session('qr_code_id');
         $qrCode = QrCode::findOrFail($qr_code_id);
         $qrCode->status = $request->input('status', 'Active'); // Default to 'active' if no status provided
         $qrCode->save();
 
-          // Update the status of the related guest
-          if ($qrCode->guest) {
+        // Update the status of the related guest
+        if ($qrCode->guest) {
             $guest = $qrCode->guest;
             $guest->status = $request->input('status', 'Active'); // Or another logic for guest status
             $guest->save();
         }
+
+        Mail::to('ivansorra@gmail.com')->send(new SendQrMail('hello'));
 
         return view('flows.complete');
     }
