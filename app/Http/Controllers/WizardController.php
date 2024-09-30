@@ -119,14 +119,16 @@ class WizardController extends Controller
             $guest = $qrCode->guest;
             $guest->status = $request->input('status', 'Active'); // Or     another logic for guest status
             $guest->save();
+
+            $emailGuest = $qrCode->guest->guests_email;
         }
 
         $guest_name = session()->get('guest_name');
         $member = session()->get('member')['members_name'];
-        $visit_type = $request->visit_type;
+        $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
         $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).'-'.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
 
-        Mail::to('ivansorra@gmail.com')->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id));
+        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id));
 
         return view('flows.complete');
     }
