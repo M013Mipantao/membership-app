@@ -27,16 +27,16 @@ if (!function_exists('generateTemporaryPassword')) {
 
         // If the name has only two parts (first and last name)
         if (count($nameParts) == 2) {
-           
+
                 $firstName = $nameParts[0];
                 $lastName = $nameParts[1];
-           
+
         }
-    
+
         // If the name has more than two parts
         $firstName = $nameParts[0];  // First name is the first element
         $lastName = $nameParts[count($nameParts) - 1];  // Last name is the last element
-    
+
         // Get the first character of the first and last name, and convert to lowercase
         $firstInitial = strtolower(substr($firstName, 0, 1));
         $lastInitial = strtolower(substr($lastName, 0, 1));
@@ -45,5 +45,16 @@ if (!function_exists('generateTemporaryPassword')) {
         $temporaryPassword = $membershipPart . $firstInitial . $lastInitial;
 
         return $temporaryPassword;
+    }
+}
+
+if (!function_exists('convertDateTimeToString')) {
+    function convertDateTimeToString($dateString)
+    {
+        $date = new DateTime($dateString);
+
+        $formattedDate = $date->format('F j, Y \a\t H:i:s');
+
+        return $formattedDate;
     }
 }

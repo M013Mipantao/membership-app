@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Guest;
 use App\Models\QrCode;
 use App\Http\Controllers\Controller;
+use App\Helpers\helpers;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
 use App\Mail\SendQrMail;
@@ -116,11 +117,16 @@ class WizardController extends Controller
         // Update the status of the related guest
         if ($qrCode->guest) {
             $guest = $qrCode->guest;
-            $guest->status = $request->input('status', 'Active'); // Or another logic for guest status
+            $guest->status = $request->input('status', 'Active'); // Or     another logic for guest status
             $guest->save();
         }
 
-        Mail::to('ivansorra@gmail.com')->send(new SendQrMail('hello'));
+        $guest_name = session()->get('guest_name');
+        $member = session()->get('member')['members_name'];
+        $visit_type = $request->visit_type;
+        $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).'-'.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
+
+        Mail::to('ivansorra@gmail.com')->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id));
 
         return view('flows.complete');
     }

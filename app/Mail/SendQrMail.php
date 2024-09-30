@@ -17,17 +17,30 @@ class SendQrMail extends Mailable
      * Create a new message instance.
      */
 
-    public $messageContent;
-    public function __construct($messageContent)
+    public $guest_name;
+    public $member_name;
+    public $visit;
+    public $visit_duration;
+    public $qr_id;
+
+    public function __construct($guest_name, $member_name, $visit, $visit_duration, $qr_id)
     {
-        $this->messageContent = $messageContent;
+        $this->guest_name = $guest_name;
+        $this->member_name = $member_name;
+        $this->visit = $visit;
+        $this->visit_duration = $visit_duration;
+        $this->qr_id = $qr_id;
     }
 
     public function build()
     {
         return $this->view('emails.emailVerification')->with(
             [
-                'message' => $this->messageContent
+                'guest_name' => $this->guest_name,
+                'member_name' => $this->member_name,
+                'visit' => $this->visit,
+                'visit_duration' => $this->visit_duration,
+                'qr_id' => $this->qr_id
             ]
         );
     }
