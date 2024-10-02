@@ -133,4 +133,56 @@ class GuestController extends Controller
         $guest->update($request->all());
         return response()->json(['success' => true]);
     }
+
+    public function new_member_store_guest(Request $request)
+    {
+        // Validate the required fields
+        $validatedData = $request->validate([
+            'guests_name' => 'required|string|max:255',
+            'guests_email' => 'required|email',
+            'contact' => 'required|numeric',
+            'status' => 'required|in:Active,Inactive',
+            'fk_member_guest_id' => 'required',
+            'startdate' => 'required|date',
+            'enddate' => 'required|date',  // Ensure enddate is not before startdate
+            'agreementCheckbox' => 'nullable',  // Make sure the checkbox is checked
+        ]);
+    
+        // Create the guest record
+        $guest = Guest::create([
+            'guests_name' => $validatedData['guests_name'],
+            'guests_email' => $validatedData['guests_email'],
+            'contact' => $validatedData['contact'],
+            'status' => $validatedData['status'],
+            'fk_member_guest_id' => $validatedData['fk_member_guest_id'],
+        ]);
+    
+        // Generate a random QR code
+        $code = generateRandomCode();
+    
+        // Create the QR code entry with the guest's ID
+        $qr = QrCode::create([
+            'qr_code' => $code,
+            'fk_member_guest_qr_id' => $guest->id,
+            'type' => 'guest',
+            'startdate' => $validatedData['startdate'],
+            'enddate' => $validatedData['enddate'],
+            'status' => 'Active',
+        ]);
+    
+        // Store the guest and QR code info in session
+        session([
+            'guest_id' => $guest->id,
+            'guest_name' => $guest->guests_name,
+            'qr_code_id' => $qr->id,
+            'guest_email' => $guest->guests_email,
+        ]);
+    
+        // Redirect back with a success message or route to the next step
+        return view('flows.complete');
+    }
+    
+
+
+
 }
