@@ -43,7 +43,7 @@ class Login_Controller extends Controller
                 $request->session()->regenerate();
 
                 // Redirect to intended page
-                return redirect()->intended('member_registration/step1');
+                return redirect()->intended('member_registration/form');
             }
         }
     

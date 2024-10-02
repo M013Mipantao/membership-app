@@ -120,5 +120,21 @@ class WizardController extends Controller
         return view('flows.complete');
     }
 
+    public function guest_info(Request $request)
+    {
+        $data = [
+            'startdate' => $request->startdate,
+            'enddate' => $request->enddate,
+            'visit_type' => $request->visit_type,
+            'member' => session('member'),
+            'guest_id' => session('guest_id'),
+            'guest_name' => session('guest_name'),
+            'guest_email' => session('guest_email'),
+            'qr_code_id' => session('qr_code_id'),
+        ];
+
+        return view('flows.guest_info',compact('data'));
+        // return view('flows.guest_info', compact('guests', 'members'));
+    }
 
 }

@@ -63,8 +63,84 @@
         .full-height {
             height: 100vh;
         }
+.divider {
+    display: block;
+    padding: 20px;
+    border: 1px solid #ccc; /* Border around the section */
+    border-radius: 10px; /* Rounded corners */
+    position: relative;
+    margin-bottom: 20px;
+    
+}
 
-    </style>
+.divider span {
+    position: absolute;
+    top: -12px; /* Adjusts the position of the label */
+    left: 20px; /* Aligns the span to the left */
+    background-color: white; /* To match the background of the container */
+    padding: 0 10px;
+    color: #888;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 5px; /* Gives the span rounded corners */
+}
+
+.button-group {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-top: 15px;
+}
+
+    /* Modal background */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 999; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    }
+
+    /* Modal content box */
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px; /* Max width of the modal */
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    /* Close button (X) */
+    .close {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+    }
+
+    /* Disabled button styles */
+    .btn[disabled] {
+        background-color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
+    }
+</style>
 </head>
 <body>
     <div class="container mt-5">
@@ -80,6 +156,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Include the QR Code library -->
-
+    @stack('scripts')
 </body>
 </html>

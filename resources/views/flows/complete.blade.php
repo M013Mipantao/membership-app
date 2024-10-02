@@ -6,6 +6,7 @@
 
 @section('content')
 <div class="container text-center mb-5">
+     <pre>{{ print_r(session()->all()) }}</pre>
     <!-- Step Completed Title -->
     <h1 class="my-5">Step Completed</h1>
 

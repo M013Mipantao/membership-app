@@ -9,8 +9,21 @@
     <hr class="sidebar-divider my-0">
     
     <li class="nav-item active">
-        <a class="nav-link" href="/">
+        <a class="nav-link" href="{{route('admin.dashboard')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="{{route('admin.dashboard')}}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Add Users</span>
+        </a>
+        <a class="nav-link" href="{{route('admin.dashboard')}}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Member List</span>
+        </a>
+        <a class="nav-link" href="{{route('admin.transaction')}}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Trasactions</span>
+        </a>
     </li>
 </ul>

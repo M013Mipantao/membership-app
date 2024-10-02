@@ -72,6 +72,7 @@ class QRCodeController extends Controller
             if (!is_null($qrCode->startdate) && !is_null($qrCode->enddate)) {
                 if ($currentDate->gte($qrCode->startdate) && $currentDate->lte($qrCode->enddate)) {
                     $isActive = true;
+
                 }
             }
             // Case 2: startdate is not null and enddate is null

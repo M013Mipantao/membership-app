@@ -12,6 +12,9 @@
     <link href="{{ asset('sb-admin-2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-pro.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('sb-admin-2/css/custom.css') }}" rel="stylesheet">
 
     <style>
         body {
@@ -62,12 +65,12 @@
     <script src="{{ asset('sb-admin-2/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('sb-admin-2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('sb-admin-2/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+    <script src="{{ asset('sb-admin-2/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('sb-admin-2/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('sb-admin-2/js/sb-admin-2.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    {{-- <script src="{{ asset('assets/js/custom.js') }}"></script> --}}
     <script src="{{ asset('sb-admin-2/js/custom.js') }}"></script>
-
+    @stack('scripts')
 </body>
 
 </html>
