@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Member;
 use App\Models\Guest;
 use App\Models\QrCode;
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
+use App\Helpers\helpers;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
+use App\Mail\SendQrMail;
 use Symfony\Component\HttpFoundation\Response;
+
+use Illuminate\Support\Facades\Mail;
 
 
 class WizardController extends Controller
@@ -104,18 +108,27 @@ class WizardController extends Controller
 
     public function complete(Request $request)
     {
-     
-        $qr_code_id = session('qr_code_id');   
+
+        $qr_code_id = session('qr_code_id');
         $qrCode = QrCode::findOrFail($qr_code_id);
         $qrCode->status = $request->input('status', 'Active'); // Default to 'active' if no status provided
         $qrCode->save();
 
-          // Update the status of the related guest
-          if ($qrCode->guest) {
+        // Update the status of the related guest
+        if ($qrCode->guest) {
             $guest = $qrCode->guest;
-            $guest->status = $request->input('status', 'Active'); // Or another logic for guest status
+            $guest->status = $request->input('status', 'Active'); // Or     another logic for guest status
             $guest->save();
+
+            $emailGuest = $qrCode->guest->guests_email;
         }
+
+        $guest_name = session()->get('guest_name');
+        $member = session()->get('member')['members_name'];
+        $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
+        $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).'-'.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
+
+        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id));
 
         return view('flows.complete');
     }
