@@ -9,6 +9,7 @@ use App\Models\QrCode;
 use App\Mail\SendQrMail;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQRcode;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class GuestController extends Controller
@@ -151,7 +152,7 @@ class GuestController extends Controller
             'enddate' => 'required|date|after_or_equal:startdate', // Ensure enddate is not before startdate
             'agreementCheckbox' => 'nullable',  // Make sure the checkbox is checked
         ]);
-    
+
         // Create the guest record
         $guest = Guest::create([
             'guests_name' => $validatedData['guests_name'],
@@ -160,29 +161,11 @@ class GuestController extends Controller
             'status' => $validatedData['status'],
             'fk_member_guest_id' => $validatedData['fk_member_guest_id'],
         ]);
-    
+
         // Generate a random QR code
         $gencode = generateRandomCode();
-    
-        // Check current date and status of the QR code based on start and end dates
-        $startdate = Carbon::parse($validatedData['startdate']);
-        $enddate = Carbon::parse($validatedData['enddate']);
-        $currentDate = Carbon::now();
-        
-        // Determine the status based on date comparison
-        if ($currentDate->lt($startdate)) {
-            $qrStatus = 'Not yet available';
-        } elseif ($currentDate->between($startdate, $enddate)) {
-            $qrStatus = 'Active';
-        } else {
-            $qrStatus = 'Expired';
-        }
-    
-        // Generate the QR code URL with the visit date range and the determined status
-        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].
-                ";visitdate:".$validatedData['startdate'].",".$validatedData['enddate'].
-                ";status:".$qrStatus;
-    
+        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].";visitdate:".$validatedData['startdate']."-".$validatedData['enddate'].";status:".$validatedData['status'];
+
         // Create the QR code entry with the guest's ID
         $qr = QrCode::create([
             'qr_code' => url('/')."/qr-code-scan?".$code,
@@ -192,7 +175,7 @@ class GuestController extends Controller
             'enddate' => $validatedData['enddate'],
             'status' => $qrStatus,
         ]);
-    
+
         // Store the guest and QR code info in session
         session([
             'guest_id' => $guest->id,
@@ -200,7 +183,7 @@ class GuestController extends Controller
             'qr_code_id' => $qr->id,
             'guest_email' => $guest->guests_email,
         ]);
-    
+
         // Redirect back with a success message or route to the next step
         return redirect()->route('flows.complete');
     }
@@ -212,44 +195,36 @@ class GuestController extends Controller
         $qrCode = QrCode::findOrFail($qr_code_id);
         $qrCode->status = $request->input('status', 'Active'); // Default to 'Active' if no status provided
         $qrCode->save();
-    
+
         // Update the status of the related guest
         if ($qrCode->guest) {
             $guest = $qrCode->guest;
             $guest->status = $request->input('status', 'Active'); // Or another logic for guest status
             $guest->save();
-    
+
             $emailGuest = $qrCode->guest->guests_email;
         }
-    
+
         $guest_name = session()->get('guest_name');
         $member = session()->get('member')['members_name'];
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
-        $duration = isset($qrCode->enddate) 
-            ? convertDateTimeToString($qrCode->startdate) . '-' . convertDateTimeToString($qrCode->enddate) 
+        $duration = isset($qrCode->enddate)
+            ? convertDateTimeToString($qrCode->startdate) . '-' . convertDateTimeToString($qrCode->enddate)
             : convertDateTimeToString($qrCode->startdate);
-    
+
         // Generate the QR code from the URL and encode it as base64
         // $qrCodeImage = $qrCode->qr_code;  // This is the URL or string you want to encode
         $qrCodeImage = 'http://127.0.0.1:8000/qr-code-scan?data=code:pa3eBxf6;name:guest 1;visitdate:2024-10-10T10:12-2024-10-10T22:12;status:Inactive';
-        $qrCodeGenerated = customQrCode::format('png')->size(300)->generate($qrCodeImage);
+        $qrCode = customQrCode::format('png')->size(200)->generate($qrCode->qr_code);
 
+        $qrPath = '/qr_codes/'.$guest_name.'-'.$duration.'.png';
+        Storage::disk('public')->put($qrPath, $qrCode);
 
-        // Save the generated QR code to a file
-        $filePath = public_path('qr_codes/'.$guest_name.'.png'); // Make sure the 'qr_codes' directory exists
-        file_put_contents($filePath, $qrCodeGenerated);
+        $qrCodeUrl = Storage::disk('public')->url($qrPath);
 
-        // Encode the QR code image as base64
-        $encodedQrCode = base64_encode($qrCodeGenerated); 
-        $qrCodeUrl = 'data:image/png;base64,' . $encodedQrCode; // Create the data URL
-         
-        // dd($qrCodeGenerated);
+        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id, $qrCodeUrl));
 
-    
-        // Send email with the QR code
-        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qrCodeImage, $qrCodeUrl));
-    
         return view('flows.complete', compact('qrCodeUrl', 'guest_name', 'member', 'visit_type', 'duration'));
     }
-    
+
 }
