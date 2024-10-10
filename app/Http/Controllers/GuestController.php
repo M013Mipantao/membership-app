@@ -164,8 +164,26 @@ class GuestController extends Controller
 
         // Generate a random QR code
         $gencode = generateRandomCode();
-        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].";visitdate:".$validatedData['startdate']."-".$validatedData['enddate'].";status:".$validatedData['status'];
-
+    
+        // Check current date and status of the QR code based on start and end dates
+        $startdate = Carbon::parse($validatedData['startdate']);
+        $enddate = Carbon::parse($validatedData['enddate']);
+        $currentDate = Carbon::now();
+        
+        // Determine the status based on date comparison
+        if ($currentDate->lt($startdate)) {
+            $qrStatus = 'Not yet available';
+        } elseif ($currentDate->between($startdate, $enddate)) {
+            $qrStatus = 'Active';
+        } else {
+            $qrStatus = 'Expired';
+        }
+    
+        // Generate the QR code URL with the visit date range and the determined status
+        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].
+                ";visitdate:".$validatedData['startdate'].",".$validatedData['enddate'].
+                ";status:".$qrStatus;
+    
         // Create the QR code entry with the guest's ID
         $qr = QrCode::create([
             'qr_code' => url('/')."/qr-code-scan?".$code,
