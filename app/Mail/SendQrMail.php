@@ -22,14 +22,16 @@ class SendQrMail extends Mailable
     public $visit;
     public $visit_duration;
     public $qr_id;
+    public $qr_code;
 
-    public function __construct($guest_name, $member_name, $visit, $visit_duration, $qr_id)
+    public function __construct($guest_name, $member_name, $visit, $visit_duration, $qr_id, $qr_code)
     {
         $this->guest_name = $guest_name;
         $this->member_name = $member_name;
         $this->visit = $visit;
         $this->visit_duration = $visit_duration;
         $this->qr_id = $qr_id;
+        $this->qr_code = $qr_code;
     }
 
     public function build()
@@ -40,7 +42,8 @@ class SendQrMail extends Mailable
                 'member_name' => $this->member_name,
                 'visit' => $this->visit,
                 'visit_duration' => $this->visit_duration,
-                'qr_id' => $this->qr_id
+                'qr_id' => $this->qr_id,
+                'qrCodeUrl' => $this->qr_code
             ]
         );
     }
