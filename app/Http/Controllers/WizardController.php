@@ -127,8 +127,13 @@ class WizardController extends Controller
         $member = session()->get('member')['members_name'];
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
         $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).'-'.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
-
-        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id));
+        // Generate QR code from the QR code string (assuming it's a base64 string)
+        $qrCodeImage = utf8_encode($qrCode->qr_code); // Decode base64 string
+        $qrCode = customQrCode::format('png')->size(300)->generate($qrCodeImage);
+        $encodedQrCode = base64_encode($qrCode); // Encode to base64 for the response
+        $qrCodeUrl = 'data:image/png;base64,' . $encodedQrCode;
+        
+        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration,$qr_code_id , $qrCodeUrl ));
 
         return view('flows.complete');
     }
