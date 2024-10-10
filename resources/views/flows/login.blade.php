@@ -15,41 +15,43 @@
                         <div class="card o-hidden border-0 shadow-lg my-5">
                             <div class="card-body p-5">
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                    <h1 id="title" class="h4 text-gray-900 mb-4">Welcome!</h1>
+                                </div>
+                                <div class="text-left">
+                                    <h4 id="title-pass" class="text-gray-900 mb-4 d-none">Enter your password</h4>
                                 </div>
 
                                 <!-- Login Form -->
-                                <form class="user" method="POST" action="{{ route('login') }}">
+                                <form class="user" id="login-form" method="POST" action="{{ route('login') }}">
                                     @csrf
-                                    <div class="form-group">
+
+                                    <!-- Membership ID Section -->
+                                    <div class="form-group" id="membership-section">
                                         <input type="text" class="form-control form-control-user" id="membership_id" name="membership_id" placeholder="Enter your Membership ID" required>
-                                        @error('membership_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                        <small class="text-danger d-none" id="membership-error"></small>
                                     </div>
 
-                                    <div class="form-group">
+                                    <!-- Password Section (Initially hidden) -->
+                                    <div class="form-group d-none" id="password-section">
                                         <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password" required>
-                                        @error('password')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                        <small class="text-danger d-none" id="password-error"></small>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-user btn-block d-flex justify-content-center">
+
+                                    <!-- Buttons -->
+                                    <button type="button" class="btn btn-primary btn-user btn-block d-flex justify-content-center" id="next-button">
+                                        Next
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-user btn-block d-none" id="login-button">
                                         Login
-                                    </button>                                    
+                                    </button>
+                                    
                                 </form>
 
                                 <!-- Forgot Password Link -->
                                 <hr>
                                 <div class="text-center">
-                                    {{-- {{ route('password.request') }} --}}
                                     <a class="small" href="{{ route('password.request') }}">Forgot Password?</a>
                                 </div>
-
-                                <!-- Register Link -->
-                                {{-- <div class="text-center">
-                                    <a class="small" href="{{ route('register') }}">Create an Account!</a>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -58,4 +60,54 @@
         </div>
     </div>
 </div>
+
+<script>
+  document.getElementById('next-button').addEventListener('click', function() {
+    // Create a FormData object with the membership ID
+    let formData = new FormData(document.getElementById('login-form'));
+
+    // AJAX request to validate membership ID
+    fetch('{{ route('validateMembership') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            'Accept': 'application/json',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.first_time) {
+                // If first-time login, redirect to create password form
+                window.location.href = `{{ url('password/create') }}/${formData.get('membership_id')}`;
+            } else {
+                // Show password field and hide the Next button
+                document.getElementById('membership-section').classList.add('d-none');
+         
+                document.getElementById('password-section').classList.remove('d-none');
+                document.getElementById('next-button').classList.add('d-none');
+                document.getElementById('login-button').classList.remove('d-none');
+                // Remove the Next button entirely from the DOM
+                document.getElementById('next-button').remove();
+                 // Show the Login button and add necessary classes
+                const loginButton = document.getElementById('login-button');
+                loginButton.classList.remove('d-none');
+                loginButton.classList.add('d-flex', 'justify-content-center');
+
+                const title = document.getElementById('title-pass');
+                title.classList.remove('d-none');
+                document.getElementById('title').classList.add('d-none');
+
+            }
+        } else {
+            // Show error message for invalid membership ID
+            document.getElementById('membership-error').classList.remove('d-none');
+            document.getElementById('membership-error').innerText = data.message;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
 @endsection

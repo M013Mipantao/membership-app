@@ -19,6 +19,17 @@ Route::get('/', function () {
     return view('flows.login');
 });
 
+Route::post('/validate-membership', [Login_Controller::class, 'validateMembership'])->name('validateMembership');
+
+// Index
+Route::get('/create-password', function () {
+    return view('flows.create-password');
+});
+
+Route::get('password/create/{membership_id}', [Login_Controller::class, 'createPasswordForm'])->name('password.create');
+Route::post('password/store', [Login_Controller::class, 'storePassword'])->name('password.store');
+Route::get('password/insert', [Login_Controller::class, 'insert'])->name('password.insert');
+
 
 // ADMIN PAGE
 // membership
@@ -48,14 +59,14 @@ Route::post('/get-account-info', [QRCodeController::class, 'getAccountInfo']);
 // Members Page
 Route::middleware(['auth'])->group(function () {
     Route::get('/member_registration/form', [WizardController::class, 'guest_info'])->name('flows.guest_info');
-    Route::post('/guest-info-form', [GuestController::class, 'new_member_store_guest'])->name('guest-info-form');
+    Route::post('guest-info-form', [GuestController::class, 'new_member_store_guest'])->name('guest-info-form');
 
     Route::get('/member_registration/step1', [WizardController::class, 'step1'])->name('flows.step1');
     Route::post('/step1', [WizardController::class, 'postStep1']);
     Route::get('/member_registration/step2', [WizardController::class, 'step2'])->name('flows.step2');
     Route::get('/member_registration/step3', [WizardController::class, 'step3'])->name('flows.step3');
     Route::post('/step3', [WizardController::class, 'postStep3']);
-    Route::get('/member_registration/complete', [WizardController::class, 'complete'])->name('flows.complete');
+    Route::get('/member_registration/complete', [GuestController::class, 'complete'])->name('flows.complete');
 
     Route::get('/select-guests', [GuestController::class, 'select_guest']);
     Route::put('/select-guests/{id}', [GuestController::class, 'update'])->name('guests.update');
@@ -90,7 +101,7 @@ Route::get('/download-qr-code/{qrId}', function ($qrId) {
 
     return response($qrCode)
         ->header('Content-Type', 'image/png')
-        ->header('Content-Disposition', 'attachment; filename="qr_code_' . $qr->qr_code . '.png"');
+        ->header('Content-Disposition', 'attachment; filename="qr_code.png"');
 })->name('download.qr.code');
 
 
@@ -104,3 +115,10 @@ Route::get('admin/user', [Controller::class,'edit'])->name('users.edit');
 Route::post('admin/user', [Controller::class,'destroy'])->name('users.destroy');
 Route::get('admin/create', [AdminController::class, 'create'])->name('admin.create');
 Route::post('admin/create', [AdminController::class, 'store'])->name('admin.store');
+
+// New Scanner
+Route::get('/qr-code-scan', [QRCodeController::class, 'scanQrCode'])->name('qr.scan');
+
+// OTP
+Route::get('otp/verify', [Login_Controller::class, 'showOtpForm'])->name('otp.verify');
+Route::post('otp/verify', [Login_Controller::class, 'verifyOtp']);

@@ -102,7 +102,7 @@ class GuestController extends Controller
             try {
                 // Generate QR code from the QR code string (assuming it's a base64 string)
                 $qrCodeImage = utf8_encode($guest->qr_code); // Decode base64 string
-                $qrCode = customQrCode::format('png')->size(300)->generate($qrCodeImage);
+                $qrCode = customQrCode::format('png')->size(150)->generate($qrCodeImage);
                 $encodedQrCode = base64_encode($qrCode); // Encode to base64 for the response
 
                 // Process each guest record
@@ -137,6 +137,7 @@ class GuestController extends Controller
         return response()->json(['success' => true]);
     }
 
+
     public function new_member_store_guest(Request $request)
     {
         // Validate the required fields
@@ -147,7 +148,7 @@ class GuestController extends Controller
             'status' => 'required|in:Active,Inactive',
             'fk_member_guest_id' => 'required',
             'startdate' => 'required|date',
-            'enddate' => 'required|date',  // Ensure enddate is not before startdate
+            'enddate' => 'required|date|after_or_equal:startdate', // Ensure enddate is not before startdate
             'agreementCheckbox' => 'nullable',  // Make sure the checkbox is checked
         ]);
     
@@ -162,7 +163,25 @@ class GuestController extends Controller
     
         // Generate a random QR code
         $gencode = generateRandomCode();
-        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].";visitdate:".$validatedData['startdate']."-".$validatedData['enddate'].";status:".$validatedData['status'];
+    
+        // Check current date and status of the QR code based on start and end dates
+        $startdate = Carbon::parse($validatedData['startdate']);
+        $enddate = Carbon::parse($validatedData['enddate']);
+        $currentDate = Carbon::now();
+        
+        // Determine the status based on date comparison
+        if ($currentDate->lt($startdate)) {
+            $qrStatus = 'Not yet available';
+        } elseif ($currentDate->between($startdate, $enddate)) {
+            $qrStatus = 'Active';
+        } else {
+            $qrStatus = 'Expired';
+        }
+    
+        // Generate the QR code URL with the visit date range and the determined status
+        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].
+                ";visitdate:".$validatedData['startdate'].",".$validatedData['enddate'].
+                ";status:".$qrStatus;
     
         // Create the QR code entry with the guest's ID
         $qr = QrCode::create([
@@ -171,7 +190,7 @@ class GuestController extends Controller
             'type' => 'guest',
             'startdate' => $validatedData['startdate'],
             'enddate' => $validatedData['enddate'],
-            'status' => 'Active',
+            'status' => $qrStatus,
         ]);
     
         // Store the guest and QR code info in session
@@ -183,8 +202,9 @@ class GuestController extends Controller
         ]);
     
         // Redirect back with a success message or route to the next step
-        return   redirect()->route('flows.complete');
+        return redirect()->route('flows.complete');
     }
+    
 
     public function complete(Request $request)
     {

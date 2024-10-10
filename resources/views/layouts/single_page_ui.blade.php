@@ -11,7 +11,7 @@
     <link href="{{ asset('sb-admin-2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('sb-admin-2/css/wave.css') }}" rel="stylesheet">
-
+    @yield('styles') <!-- For additional styles if needed -->
     <style>
         body {
             font-family: 'Nunito', sans-serif;
@@ -143,6 +143,8 @@
 </style>
 </head>
 <body>
+
+    @yield('error')
     <div class="container mt-5">
         <!-- Steps 1 to 4 -->
         @yield('steps')

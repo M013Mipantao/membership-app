@@ -6,9 +6,9 @@
 
 @section('content')
 <div class="container text-center mb-5">
-     <pre>{{ print_r(session()->all()) }}</pre>
+     {{-- <pre>{{ print_r(session()->all()) }}</pre> --}}
     <!-- Step Completed Title -->
-    <h1 class="my-5">Step Completed</h1>
+    <h1 class="my-5">Success! Your form has been successfully submitted and is now complete.</h1>
 
     <!-- Animated Completed Icon -->
     <div class="mb-5">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Add More Guests Button with Icon -->
-    <a id="addMoreGuestBtn" class="btn btn-primary" href="{{route('flows.step1')}}">
+    <a id="addMoreGuestBtn" class="btn btn-primary" href="{{route('flows.guest_info')}}">
          Add More Guests
     </a>
 </div>

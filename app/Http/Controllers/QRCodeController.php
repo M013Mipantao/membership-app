@@ -9,6 +9,8 @@ use App\Models\Member;
 use App\Models\Transaction;
 use App\Models\QrCode;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class QRCodeController extends Controller
 {
@@ -154,6 +156,77 @@ class QRCodeController extends Controller
             return response()->json(['error' => 'An error occurred.'], 500);
         }
     }
+
+    public function scanQrCode(Request $request)
+    {
+        // Retrieve the 'data' query parameter from the URL
+        $qrData = $request->input('data'); 
+        
+        // Split the data based on semicolons
+        $fields = explode(';', $qrData);
+        $parsedData = [];
     
+        foreach ($fields as $field) {
+            // Only process the key-value pairs that are correctly formatted
+            if (strpos($field, ':') !== false) {
+                $keyValue = explode(':', $field, 2); // Limit to 2 to handle cases like visitdate
+                if (count($keyValue) === 2) {
+                    $key = trim($keyValue[0]);
+                    $value = trim($keyValue[1]);
+                    $parsedData[$key] = $value;
     
+                    // Check if the key is 'visitdate' and format it
+                    if ($key === 'visitdate') {
+                        // Assuming value format is '2024-10-10T10:50,2024-10-10T10:50'
+                        $dates = explode(',', $value); // Split the range using a comma
+                        if (count($dates) === 2) {
+                            // Format both start and end dates
+                            $start = Carbon::parse($dates[0]); // Start date
+                            $end = Carbon::parse($dates[1]); // End date
+                            // Format them as required
+                            $parsedData[$key] = $start->format('F j, Y g:i A') . ' - ' . $end->format('F j, Y g:i A');
+    
+                            // Get the current date for comparison
+                            $currentDate = Carbon::now();
+    
+                            // Determine the QR code status based on the date comparison
+                            if ($currentDate->lt($start)) {
+                                $qrStatus = 'Not yet available';
+                            } elseif ($currentDate->between($start, $end)) {
+                                $qrStatus = 'Active';
+                            } else {
+                                $qrStatus = 'Expired';
+                            }
+    
+                            // Update the QR code status in the database
+                            $qrCode = QrCode::where('qr_code', $qrData)->first(); // Fetch the QR code based on the data
+                            if ($qrCode) {
+                                $qrCode->status = $qrStatus;
+                                $qrCode->save(); // Save the updated status
+                            }
+    
+                            // Add the calculated status to the parsed data
+                            $parsedData['status'] = $qrStatus;
+                        } else {
+                            // Log if the date format is unexpected
+                            Log::info("Unexpected visitdate format: " . $value);
+                        }
+                    }
+                } else {
+                    // Log improperly formatted fields for debugging
+                    Log::info("Field not correctly formatted: " . $field);
+                }
+            } else {
+                // Log if no colon is found
+                Log::info("No colon found in field: " . $field);
+            }
+        }
+    
+        // Log the parsed data for debugging
+        Log::info('Parsed Data: ', $parsedData);
+    
+        return view('qr_code.scan_result', ['scanResult' => $parsedData]);
+    }
+    
+ 
 }
