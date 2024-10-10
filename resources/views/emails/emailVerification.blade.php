@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset</title>
+    <title>Guest QR Code Confirmation</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,6 +22,17 @@
         h1 {
             color: #007bff;
         }
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-container img {
+            width: 150px;
+            height: 150px;
+        }
+        p {
+            font-size: 16px;
+        }
         a {
             background-color: #007bff;
             color: white;
@@ -39,11 +50,15 @@
 <body>
     <div class="container">
         <h1>Guest QR Code Confirmation</h1>
-        <p>I, <b>{{ $member_name }}</b>, hereby give permission for the guest, <b>{{ $guest_name }}</b> to use my account balance and consumable services</p><br/>
-        <p>This consent is for a <b>{{ $visit }}</b> visit on <b>{{ $visit_duration }}</b>.</p><br />
-        <p>By clicking the link, the member agreed to allow the guest to use his/her account balance and consumable services. <br />
-            <a href="{{ url('/download-qr-code/'.$qr_id) }}">Download QR Code</a>
-        </p>
+        <p><b>{{ $member_name }}</b> has sent you a QR Code. This QR Code allows the guest, <b>{{ $guest_name }}</b>, to use the member's account balance and consumable services.</p><br/>
+        <p>This permission is valid for <b>{{ $visit_duration }}</b>.</p><br />
+        <p>TEST: {{$qr_id}}</p>
+        <div class="qr-container">
+            <img  src="{{$qrCodeUrl}}" alt="QR Code" style="width: 150px; height: 150px;" />
+        </div>
+        <p>Kindly present this QR code when making payments or using wallet services.</p>
+
+        <p>By proceeding with this, the member has agreed to allow the guest to access the account balance and consumable services for the specified visit.</p>
     </div>
 </body>
 </html>
