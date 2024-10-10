@@ -11,6 +11,7 @@ use App\Helpers\helpers;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
 use App\Mail\SendQrMail;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Mail;
@@ -128,12 +129,16 @@ class WizardController extends Controller
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
         $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).'-'.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
         // Generate QR code from the QR code string (assuming it's a base64 string)
-        $qrCodeImage = utf8_encode($qrCode->qr_code); // Decode base64 string
-        $qrCode = customQrCode::format('png')->size(300)->generate($qrCodeImage);
-        $encodedQrCode = base64_encode($qrCode); // Encode to base64 for the response
-        $qrCodeUrl = 'data:image/png;base64,' . $encodedQrCode;
-        
-        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration,$qr_code_id , $qrCodeUrl ));
+        // $qrCodeImage = utf8_encode($qrCode->qr_code); // Decode base64 string
+
+        $qrCode = base64_encode(customQrCode::format('png')->size(200)->generate($qrCode->qr_code));
+
+        $qrPath = '/qr_codes/'.$guest_name.'-'.$duration.'.png';
+        Storage::disk('public')->put($qrPath, $qrCode);
+
+        $qrCodeUrl = Storage::disk('public')->url($qrPath);
+
+        Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id, $qrCodeUrl));
 
         return view('flows.complete');
     }
