@@ -131,7 +131,7 @@ class WizardController extends Controller
         // Generate QR code from the QR code string (assuming it's a base64 string)
         // $qrCodeImage = utf8_encode($qrCode->qr_code); // Decode base64 string
 
-        $qrCode = base64_encode(customQrCode::format('png')->size(200)->generate($qrCode->qr_code));
+        $qrCode = customQrCode::format('png')->size(200)->generate($qrCode->qr_code);
 
         $qrPath = '/qr_codes/'.$guest_name.'-'.$duration.'.png';
         Storage::disk('public')->put($qrPath, $qrCode);
