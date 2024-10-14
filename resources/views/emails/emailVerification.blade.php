@@ -52,7 +52,7 @@
         <h1>Guest QR Code Confirmation</h1>
         <p><b>{{ $member_name }}</b> has sent you a QR Code. This QR Code allows the guest, <b>{{ $guest_name }}</b>, to use the member's account balance and consumable services.</p><br/>
         <p>This permission is valid for <b>{{ $visit_duration }}</b>.</p><br />
-        <p>TEST: {{$qr_id}}</p>
+      
         <div class="qr-container">
             <img  src="{{$qrCodeUrl}}" alt="QR Code" style="width: 150px; height: 150px;" />
         </div>

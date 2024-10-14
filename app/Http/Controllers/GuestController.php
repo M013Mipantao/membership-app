@@ -209,40 +209,60 @@ class GuestController extends Controller
 
     public function complete(Request $request)
     {
+        // Retrieve QR code from session
         $qr_code_id = session('qr_code_id');
         $qrCode = QrCode::findOrFail($qr_code_id);
-        $qrCode->status = $request->input('status', 'Active'); // Default to 'Active' if no status provided
+    
+        // Update QR code status, default to 'Active' if not provided
+        $qrCode->status = $request->input('status', 'Active');
         $qrCode->save();
-
+    
         // Update the status of the related guest
         if ($qrCode->guest) {
             $guest = $qrCode->guest;
-            $guest->status = $request->input('status', 'Active'); // Or another logic for guest status
+            $guest->status = $request->input('status', 'Active');
             $guest->save();
-
+    
             $emailGuest = $qrCode->guest->guests_email;
         }
-
+    
         $guest_name = session()->get('guest_name');
-        $member = session()->get('member')['members_name'];
+        $member = session()->get('member')['members_name'] ?? 'Member';
+    
+        // Determine visit type and duration
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
         $duration = isset($qrCode->enddate)
             ? convertDateTimeToString($qrCode->startdate) . '-' . convertDateTimeToString($qrCode->enddate)
             : convertDateTimeToString($qrCode->startdate);
-
-        // Generate the QR code from the URL and encode it as base64
-        // $qrCodeImage = $qrCode->qr_code;  // This is the URL or string you want to encode
-        $qrCodeImage = 'http://127.0.0.1:8000/qr-code-scan?data=code:pa3eBxf6;name:guest 1;visitdate:2024-10-10T10:12-2024-10-10T22:12;status:Inactive';
-        $qrCode = customQrCode::format('png')->size(200)->generate($qrCode->qr_code);
-
-        $qrPath = '/qr_codes/'.$guest_name.'-'.$duration.'.png';
-        Storage::disk('public')->put($qrPath, $qrCode);
-
-        $qrCodeUrl = Storage::disk('public')->url($qrPath);
-
+    
+        // Sanitize guest name and duration to remove special characters
+        $sanitizedGuestName = preg_replace('/[^A-Za-z0-9\-]/', '_', $guest_name);
+        $sanitizedDuration = preg_replace('/[^A-Za-z0-9\-]/', '_', $duration);
+    
+        // Define the path for saving the QR code image in public/qr_codes directory
+        $qrPath = public_path('qr_codes/'.$sanitizedGuestName.'-'.$sanitizedDuration.'.png');
+    
+        // Ensure the directory exists, if not create it
+        if (!file_exists(public_path('qr_codes'))) {
+            mkdir(public_path('qr_codes'), 0755, true);
+        }
+    
+        // Generate QR code image
+        $qrCodeImage = customQrCode::format('png')->size(200)->generate($qrCode->qr_code);
+    
+        // Save the QR code image
+        file_put_contents($qrPath, $qrCodeImage);
+    
+        // Create the public URL for the QR code image
+        $qrCodeUrl = config('app.url') . '/qr_codes/' . $sanitizedGuestName . '-' . $sanitizedDuration . '.png';
+    
+        // Send the QR code in an email
         Mail::to($emailGuest)->send(new SendQrMail($guest_name, $member, $visit_type, $duration, $qr_code_id, $qrCodeUrl));
-
+    
+        // Return the view with the QR code details
         return view('flows.complete', compact('qrCodeUrl', 'guest_name', 'member', 'visit_type', 'duration'));
     }
+    
+    
 
 }
