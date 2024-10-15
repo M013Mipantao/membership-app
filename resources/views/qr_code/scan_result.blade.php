@@ -11,9 +11,9 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Guest Information</h6>
         </div>
-        @php
+        {{-- @php
             print_r($scanResult)
-        @endphp        
+        @endphp         --}}
         <div class="card-body">
             <div class="row">
                 <!-- Name -->
@@ -32,7 +32,7 @@
                 <div class="col-md-4">
                     <h6><strong>Status:</strong></h6>
                     <p>
-                        @if(isset($scanResult['status']) && $scanResult['status'] === 'active')
+                        @if(isset($scanResult['status']) && $scanResult['status'] === 'Active')
                             <span class="badge badge-success">{{ $scanResult['status'] }}</span>
                         @else
                             <span class="badge badge-danger">{{ $scanResult['status'] ?? 'Unknown' }}</span>
