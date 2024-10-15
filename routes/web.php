@@ -122,3 +122,5 @@ Route::get('/qr-code-scan', [QRCodeController::class, 'scanQrCode'])->name('qr.s
 // OTP
 Route::get('otp/verify', [Login_Controller::class, 'showOtpForm'])->name('otp.verify');
 Route::post('otp/verify', [Login_Controller::class, 'verifyOtp']);
+
+Route::get('/test-imagick', [GuestController::class, 'testImagick']);

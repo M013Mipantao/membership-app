@@ -262,6 +262,26 @@ class GuestController extends Controller
         // Return the view with the QR code details
         return view('flows.complete', compact('qrCodeUrl', 'guest_name', 'member', 'visit_type', 'duration'));
     }
+
+   public function testImagick()
+    {
+        // Directly instantiate the Imagick class without a use statement
+        $imagick = new \Imagick();
+        
+        // Create a new image (100x100) with a red background
+        $imagick->newImage(100, 100, new \ImagickPixel('red'));
+        $imagick->setImageFormat('png');
+
+        // Set the content type header to image/png
+        header('Content-Type: image/png');
+        
+        // Output image directly
+        echo $imagick;
+
+        // Clear Imagick object resources
+        $imagick->clear();
+        $imagick->destroy();
+    }
     
     
 
