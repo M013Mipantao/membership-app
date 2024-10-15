@@ -232,7 +232,7 @@ class GuestController extends Controller
         // Determine visit type and duration
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
         $duration = isset($qrCode->enddate)
-            ? convertDateTimeToString($qrCode->startdate) . '-' . convertDateTimeToString($qrCode->enddate)
+            ? convertDateTimeToString($qrCode->startdate) . ',' . convertDateTimeToString($qrCode->enddate)
             : convertDateTimeToString($qrCode->startdate);
     
         // Sanitize guest name and duration to remove special characters
