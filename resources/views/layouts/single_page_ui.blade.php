@@ -145,7 +145,7 @@
 <body>
 
     @yield('error')
-    <div class="container mt-5">
+    <div class="container">
         <!-- Steps 1 to 4 -->
         @yield('steps')
         <!-- Page Content -->
