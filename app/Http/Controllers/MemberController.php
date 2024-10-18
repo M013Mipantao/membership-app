@@ -35,7 +35,7 @@ class MemberController extends Controller
         // dd($password);
         $validatedDataUser = [
             'name' => $validatedDataMember['members_name'],
-            'password' => Hash::make($password),
+            'password' => "",
             'type' => 'member',
             'status' => 'Active',
         ];
