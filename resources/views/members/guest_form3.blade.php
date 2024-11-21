@@ -29,109 +29,92 @@
 @endif
 <form action="{{ route('guest-info-form') }}" method="POST">
     @csrf
+    <div class="container">
+        <!-- Row 1 -->
+        <div class="row">
+            <!-- Membership ID -->
+            @if (Auth::check())
+            <div class="col-md-6 d-none">
+                <label for="guest-member">Membership ID:</label>
+                <input type="text" name="fk_member_guest_id" class="form-control" value="{{ session('member')->id }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="dis_guest-member">Membership ID:</label>
+                <input type="text" name="dis_fk_member_guest_id" class="form-control" value="{{ $member_id }}" readonly>
+            </div>
+            @else
+            <div class="col-md-6">
+                <label for="guest-member">Membership ID:</label>
+                <select id="guest-member" class="form-control" name="fk_member_guest_id" required>
+                    <option value="">Membership ID</option>
+                    @foreach($members as $member)
+                    <option value="{{ $member->id }}">{{ $member->membership_id }} ({{ $member->members_name }})</option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
 
-    <!-- Membership ID Dropdown -->
-        @if (Auth::check())
-        <div class="form-group d-none">
-            <label for="guest-member">Membership ID:</label>
-            <input type="text" name="fk_member_guest_id" class="form-control" placeholder="Membership ID" value="{{ session('member')->id }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="dis_guest-member">Membership ID:</label>
-            {{-- <select id="dis_guest-member" class="form-control" name="dis_fk_member_guest_id" style="width: 100%;" disabled>
-                <option value="">Select a Membership ID</option>
-                    <option value="{{ $member_id }}" selected>{{ $member_id }}</option>
-            </select> --}}
-            <input type="text" name="dis_fk_member_guest_id" class="form-control" placeholder="Membership ID" value="{{ $member_id }}" readonly>
-
-        @else
-        <select id="guest-member" class="form-control" name="fk_member_guest_id" style="width: 100%;" required>
-            <option value="">Membership ID</option>
-            @foreach($members as $member)
-                <option value="{{ $member->id }}">{{ $member->membership_id }} ({{ $member->members_name }})</option>
-            @endforeach
-        </select>
-        @endif
-    </div>
-  {{-- <pre>{{ print_r($data) }}</pre> --}}
-    <!-- Guest Name -->
-    <div class="form-group">
-        <label for="guests_name">Guest Name:</label>
-        <input id="guests_name" type="text" name="guests_name" class="form-control" placeholder="Guest Name" required>
-    </div>
-
-    <!-- Guest Email -->
-    <div class="form-group">
-        <label for="guests_email">Guest Email:</label>
-        <input type="email" name="guests_email" class="form-control" placeholder="Guest Email" required>
-    </div>
-
-    <!-- Contact -->
-    <div class="form-group mb-4">
-        <label for="contact">Contact Number:</label>
-        <input type="text" name="contact" class="form-control" placeholder="Contact Number" required>
-    </div>
-
-    {{-- <!-- Date of Birth -->
-    <div class="form-group">
-        <label for="date_of_birth">Date of Birth:</label>
-        <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required>
-    </div> --}}
-
-    <!-- Status -->
-    <div class="form-group d-none">
-        <label for="status">Status:</label>
-        <select id="status" name="status" class="form-control" required>
-            <option value="Active">Active</option>
-            <option value="Inactive" selected>Inactive</option>
-        </select>
-    </div>
-
-    {{-- <div class="form-group">
-        <label for="visit_type">Visit Type</label>
-        <select id="visit_type" name="visit_type" class="form-control" required>
-            <option value="one-time">One Time Visit</option>
-            <option value="multiple">Multiple Visits</option>
-        </select>
-    </div> --}}
-    <div class="divider">
-        <span>Visit Date</span>
- 
-        <!-- Buttons for 2 days, 1 week, and 1 month -->
-        {{-- <div class="mt-2 button-group">
-            <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-2-days">2 Days</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-1-week">1 Week</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-1-month">1 Month</button>
-        </div> --}}
-        <div class="form-group mt-1">
-            <label for="startdate">Start Date</label>
-            <input type="datetime-local" id="startdate" name="startdate" class="form-control" required>
+            <!-- Guest Name -->
+            <div class="col-md-6">
+                <label for="guests_name">Guest Name:</label>
+                <input id="guests_name" type="text" name="guests_name" class="form-control" placeholder="Guest Name" required>
+            </div>
         </div>
 
-        <div class="form-group mt-3" id="enddate-container" >
-            <label for="enddate">End Date</label>
-            <input type="datetime-local" id="enddate" name="enddate" class="form-control">
+        <!-- Row 2 -->
+        <div class="row mt-3">
+            
+            <!-- Guest Email -->
+            <div class="col-md-6">
+                <label for="guests_email">Guest Email:</label>
+                <input type="email" name="guests_email" class="form-control" placeholder="Guest Email" required>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-md-6">
+                <label for="contact">Contact Number:</label>
+                <input type="text" name="contact" class="form-control" placeholder="Contact Number" required>
+            </div>
+        </div>
+        <div class="divider mt-4" >
+            <span>Visit Date</span>
+            <div class="row">
+            <!-- Buttons for 2 days, 1 week, and 1 month -->
+            {{-- <div class="mt-2 button-group">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-2-days">2 Days</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-1-week">1 Week</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-1-month">1 Month</button>
+            </div> --}}
+            <div class="col-md-6">
+                <label for="startdate">Start Date</label>
+                <input type="date" id="startdate" name="startdate" class="form-control" required>
+            </div>
+    
+            <div class="col-md-6">
+                <label for="enddate">End Date</label>
+                <input type="date" id="enddate" name="enddate" class="form-control">
+            </div>
+            </div>
+        </div>
+        <!-- Agreement Checkbox -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="agreementCheckbox" required disabled>
+                    <label class="custom-control-label" for="agreementCheckbox">
+                        I agree to the <a href="#" id="termsLink" onclick="displayGuestName()">Consent Form</a>.
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="row mt-4">
+            <div class="col-md-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
         </div>
     </div>
-
-     <!-- Agreement Checkbox (disabled by default) -->
-     <div class="form-group mb-3">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="agreementCheckbox" required disabled>
-            <label class="custom-control-label" for="agreementCheckbox">
-                I agree to the 
-                     <a href="#" id="termsLink" onclick="displayGuestName()" >Consent Form</a>.
-                
-            </label>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-between">
-        {{-- <a class="btn btn-light d-none" href="{{ route('flows.step2') }}">Previous</a> --}}
-        <button type="submit" class="btn btn-primary">Submit</button>   
-        {{-- <a class="btn btn-primary" href="{{ route('flows.step2') }}">Next Step</a> --}}
-    </div>
-    <!-- Submit Button -->
 </form>
 
 <!-- Terms and Conditions Modal -->

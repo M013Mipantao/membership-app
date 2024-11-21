@@ -20,7 +20,7 @@
         <div class="row align-items-center justify-content-between">
             <div class="col">
                 <h2 class="text-primary">Welcome, @if(Auth::check()) {{  $member_name  }} @endif ! </h2>
-                <p class="text-gray-700">Great job, your affiliate dashboard is ready to go! You can view your guest activities and allow them to used your consumable balance.</p>
+                <p class="text-gray-700">Kindly authorize your guests to utilize your wallet credit by completing the guest information form.</p>
                 <a class="btn btn-primary p-3">
                     Get Started
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right ms-1">
