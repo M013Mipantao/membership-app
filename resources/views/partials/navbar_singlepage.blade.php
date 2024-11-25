@@ -1,7 +1,7 @@
 
 @section('menu')
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow mb-4">
-    <a class="brand text-primary ml-3" href="#">Balesin Key Wallet</a>
+    <a class="brand text-primary ml-3" href="#">Balesin Wallet</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <i class="fa-solid fa-bars"></i>
     </button>
