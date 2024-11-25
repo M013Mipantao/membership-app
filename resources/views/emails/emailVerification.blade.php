@@ -50,15 +50,14 @@
 <body>
     <div class="container">
         <h1>Guest QR Code Confirmation</h1>
-        <p><b>{{ $member_name }}</b> has sent you a QR Code. This QR Code allows the guest, <b>{{ $guest_name }}</b>, to use the member's account balance and consumable services.</p><br/>
+        <p>Balesin Member, <b>{{ $member_name }}</b>, has sent you a QR Code. This QR Code allows the guests <b>{{ $guest_name }}</b>, to use the credit in the Member's wallet.</p><br/>
         <p>This permission is valid for <b>{{ $visit_duration }}</b>.</p><br />
       
         <div class="qr-container">
             <img  src="{{$qrCodeUrl}}" alt="QR Code" style="width: 150px; height: 150px;" />
         </div>
-        <p>Kindly present this QR code when making payments or using wallet services.</p>
+        <p>Kindly present this QR code when making payments in Balesin.</p>
 
-        <p>By proceeding with this, the member has agreed to allow the guest to access the account balance and consumable services for the specified visit.</p>
     </div>
 </body>
 </html>
