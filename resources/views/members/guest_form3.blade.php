@@ -137,7 +137,7 @@
                 <strong>{{ $data['member']->members_name }}</strong>
                 , hereby give permission for the guest, 
                 <strong id="displayArea"></strong>
-                , to use my account balance and consumable services.
+                , to use my account balance.
             </p>
         <button id="agreeTermsBtn" class="btn btn-success">I Agree</button>
     </div>
