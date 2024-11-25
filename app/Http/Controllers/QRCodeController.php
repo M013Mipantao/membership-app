@@ -161,23 +161,17 @@ class QRCodeController extends Controller
 
     public function scanQrCode(Request $request)
     {
-        // Retrieve the 'data' query parameter from the URL
-        $qrData = $request->input('data'); 
-        
-        // Decode only the 'data' part to handle any encoded characters like %20
-        $decodedData = urldecode($qrData); 
+        $qrData = $request->input('data');
+        $decodedData = urldecode($qrData);
     
-        // Log the decoded data for debugging
         Log::info('Decoded QR Data from request: ' . $decodedData);
     
-        // Split the data based on semicolons
         $fields = explode(';', $decodedData);
         $parsedData = [];
     
         foreach ($fields as $field) {
-            // Only process the key-value pairs that are correctly formatted
             if (strpos($field, ':') !== false) {
-                $keyValue = explode(':', $field, 2); // Limit to 2 to handle cases like visitdate
+                $keyValue = explode(':', $field, 2);
                 if (count($keyValue) === 2) {
                     $key = trim($keyValue[0]);
                     $value = trim($keyValue[1]);
@@ -186,66 +180,67 @@ class QRCodeController extends Controller
             }
         }
     
-        // Log the parsed fields for debugging
         Log::info('Parsed fields: ', $parsedData);
-        $searchdata = url('/').'/qr-code-scan?data='.$decodedData;
-        // Fetch the QR code from the database using 'code' key in the parsed data
+        $searchdata = url('/') . '/qr-code-scan?data=' . $decodedData;
         $qrCode = QrCode::where('qr_code', $searchdata ?? null)->first();
     
         if (!$qrCode) {
-            // Handle the case where the QR code is not found
             $data = ['error' => 'QR code not found.'];
-            return view('error.qr-code-error',compact('data'));
-            // return response()->json(['error' => 'QR code not found'], 404);
+            return view('error.qr-code-error', compact('data'));
         }
     
-        // Retrieve the start and end dates from the database
-        $start = Carbon::parse($qrCode->start_date);
-        $end = Carbon::parse($qrCode->end_date);
+        // Parse visitdate field
+        if (!isset($parsedData['visitdate'])) {
+            return response()->json(['error' => 'Visit date not found in QR code data'], 400);
+        }
     
-        // Initialize the status
+        $visitDates = explode(',', $parsedData['visitdate']);
+        if (count($visitDates) !== 2) {
+            return response()->json(['error' => 'Invalid visit date format'], 400);
+        }
+    
+        try {
+            $start = Carbon::parse(trim($visitDates[0]));
+            $end = Carbon::parse(trim($visitDates[1]));
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid date format'], 400);
+        }
+    
+        Log::info("Start Date: $start, End Date: $end");
+    
         $qrStatus = '';
-    
-        // Check if start date is after the end date (invalid range)
         if ($start->gt($end)) {
-            $qrStatus = 'Expired'; // Invalid date range, mark as expired
+            $qrStatus = 'Expired';
         } else {
-            // Get the current date for comparison
             $currentDate = Carbon::now();
-    
-            // Determine the QR code status based on the date comparison
             if ($currentDate->lt($start)) {
-                $qrStatus = 'Not yet available'; // Current date is before the start date
+                $qrStatus = 'Not yet available';
             } elseif ($currentDate->between($start, $end)) {
-                $qrStatus = 'Active'; // Current date is within the range
+                $qrStatus = 'Active';
             } else {
-                $qrStatus = 'Expired'; // Current date is after the end date
+                $qrStatus = 'Expired';
             }
         }
     
-        // Format both start and end dates for display
         $formattedStart = $start->format('F j, Y g:i A');
         $formattedEnd = $end->format('F j, Y g:i A');
     
-        // If the status is 'Expired', update the QR code status in the database
         if ($qrStatus === 'Expired') {
             $qrCode->status = $qrStatus;
-            $qrCode->save(); // Save the updated status
+            $qrCode->save();
         }
     
-        // Prepare the data to be returned or displayed
         $resultData = [
             'qr_code' => $qrCode->qr_code,
-            'name' => $parsedData['name'],
+            'name' => $parsedData['name'] ?? 'Unknown',
             'visitdate' => $formattedStart . ' - ' . $formattedEnd,
             'status' => $qrStatus,
         ];
     
-        // Log the result data for debugging
         Log::info('Result Data: ', $resultData);
     
-        // Return the scan result view with the parsed data
         return view('qr_code.scan_result', ['scanResult' => $resultData]);
     }
+    
     
 }

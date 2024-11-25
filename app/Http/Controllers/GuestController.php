@@ -144,7 +144,7 @@ class GuestController extends Controller
         // Validate the required fields
         $validatedData = $request->validate([
             'guests_name' => 'required|string|max:255',
-            'guests_email' => 'required|email|unique:guests',
+            'guests_email' => 'required|email',
             'contact' => 'required|numeric',
             'status' => 'required|in:Active,Inactive',
             'fk_member_guest_id' => 'required',

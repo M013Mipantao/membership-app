@@ -1,3 +1,4 @@
+
 @if(Auth::check())
     {{-- <h1>User Profile</h1>
     <p>Name: {{ Auth::user()->name }}</p>
@@ -14,7 +15,7 @@
     <p>Please log in to view your profile.</p>
 @endif
 
-
+@include('partials.navbar_singlepage')
  <!-- Validation Errors -->
  @if ($errors->any())
  <div class="col-12">
@@ -94,6 +95,15 @@
                 <label for="enddate">End Date</label>
                 <input type="date" id="enddate" name="enddate" class="form-control">
             </div>
+            </div>
+ 
+            <!-- Status -->
+            <div class="form-group d-none">
+                <label for="status">Status:</label>
+                <select id="status" name="status" class="form-control" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
             </div>
         </div>
         <!-- Agreement Checkbox -->
