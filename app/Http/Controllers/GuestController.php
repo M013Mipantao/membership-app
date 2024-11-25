@@ -231,9 +231,12 @@ class GuestController extends Controller
     
         // Determine visit type and duration
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
-        $duration = isset($qrCode->enddate)
-            ? convertDateTimeToString($qrCode->startdate) . ',' . convertDateTimeToString($qrCode->enddate)
-            : convertDateTimeToString($qrCode->startdate);
+        // $duration = isset($qrCode->enddate)
+        //     ? convertDateTimeToString($qrCode->startdate) . ',' . convertDateTimeToString($qrCode->enddate)
+        //     : convertDateTimeToString($qrCode->startdate);
+            $duration = isset($qrCode->enddate) 
+    ? Carbon::parse($qrCode->startdate)->toFormattedDateString().' to '.Carbon::parse($qrCode->enddate)->toFormattedDateString() 
+    : Carbon::parse($qrCode->startdate)->toFormattedDateString();
     
         // Sanitize guest name and duration to remove special characters
         $sanitizedGuestName = preg_replace('/[^A-Za-z0-9\-]/', '_', $guest_name);

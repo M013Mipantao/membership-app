@@ -127,7 +127,10 @@ class WizardController extends Controller
         $guest_name = session()->get('guest_name');
         $member = session()->get('member')['members_name'];
         $visit_type = isset($qrCode->enddate) ? 'Multiple' : 'One-time';
-        $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).','.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
+        // $duration = isset($qrCode->enddate) ? convertDateTimeToString($qrCode->startdate).' to '.convertDateTimeToString($qrCode->enddate) : convertDateTimeToString($qrCode->startdate);
+        $duration = isset($qrCode->enddate) 
+    ? Carbon::parse($qrCode->startdate)->toFormattedDateString().' to '.Carbon::parse($qrCode->enddate)->toFormattedDateString() 
+    : Carbon::parse($qrCode->startdate)->toFormattedDateString();
         // Generate QR code from the QR code string (assuming it's a base64 string)
         // $qrCodeImage = utf8_encode($qrCode->qr_code); // Decode base64 string
 
