@@ -11,20 +11,20 @@
           <a class="nav-link" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="#">Dashboard</a>
         </li>
-        <li class="nav-item dropdown">
+        {{-- <li class="nav-item dropdown">
             <a class="nav-link" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
               Services
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="#">Create Guest Information</a>
-              {{-- <a class="dropdown-item" href="#">Service 2</a> --}}
+              <a class="dropdown-item" href="#">Service 2</a>
             </div>
           </li>       
         <li class="nav-item">
           <a class="nav-link" href="#">Contact</a>
-        </li>
+        </li> --}}
       </ul>
       <div class="navbar-buttons">
         <button class="btn btn-outline-primary btn-sm mr-2">Profile</button>
