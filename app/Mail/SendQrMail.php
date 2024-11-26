@@ -45,6 +45,6 @@ class SendQrMail extends Mailable
                 'qr_id' => $this->qr_id,
                 'qrCodeUrl' => $this->qr_code
             ]
-        );
+        )->subject('QR Code Confirmation');
     }
 }
