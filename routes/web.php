@@ -7,6 +7,8 @@ use App\Http\Controllers\WizardController;
 use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Controller;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as customQrCode;
 use Symfony\Component\HttpFoundation\Response;
@@ -124,3 +126,8 @@ Route::get('otp/verify', [Login_Controller::class, 'showOtpForm'])->name('otp.ve
 Route::post('otp/verify', [Login_Controller::class, 'verifyOtp']);
 
 Route::get('/test-imagick', [GuestController::class, 'testImagick']);
+
+// Profile
+Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth')->name('profile');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

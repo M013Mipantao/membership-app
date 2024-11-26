@@ -199,5 +199,38 @@
     <script src="{{ asset('sb-admin-2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- Include the QR Code library -->
     @stack('scripts')
+    
+    <script>
+     document.querySelector('.scroll-to-start').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent default link behavior
+
+    const targetElement = document.getElementById('show-here');
+    if (!targetElement) return;
+
+    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset; // Calculate target position
+    const startPosition = window.pageYOffset; // Current scroll position
+    const duration = 1500; // Duration in milliseconds
+    let startTime = null;
+
+    function scrollAnimation(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1); // Ensure progress stays between 0 and 1
+        const easeInOutQuad = progress < 0.5
+            ? 2 * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2; // Ease-in-out effect
+
+        const scrollTo = startPosition + (targetPosition - startPosition) * easeInOutQuad;
+        window.scrollTo(0, scrollTo);
+
+        if (progress < 1) {
+            requestAnimationFrame(scrollAnimation);
+        }
+    }
+
+    requestAnimationFrame(scrollAnimation);
+});
+
+    </script>
 </body>
 </html>

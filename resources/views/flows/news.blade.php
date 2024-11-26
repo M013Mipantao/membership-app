@@ -21,7 +21,7 @@
             <div class="col">
                 <h2 class="text-primary">Welcome, @if(Auth::check()) {{  $member_name  }} @endif ! </h2>
                 <p class="text-gray-700">Kindly authorize your guests to utilize your wallet credit by completing the guest information form.</p>
-                <a class="btn btn-primary p-3">
+                <a class="btn btn-primary p-3 scroll-to-start">
                     Get Started
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right ms-1">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -30,7 +30,7 @@
                 </a>
             </div>
             <div class="col d-none d-lg-block mt-xxl-n4">
-                <img class="img-fluid px-xl-4 mt-xxl-n5" src="assets/img/illustrations/statistics.svg" alt="Dashboard Illustration">
+                {{-- <img class="img-fluid px-xl-4 mt-xxl-n5" src="assets/img/illustrations/statistics.svg" alt="Dashboard Illustration"> --}}
             </div>
         </div>
     </div>

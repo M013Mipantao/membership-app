@@ -7,11 +7,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home</a>
+        <li class="nav-item {{ request()->is('member_registration/form') ? 'active' : '' }}">
+          <a class="nav-link" href="{{ route('flows.guest_info') }}">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Dashboard</a>
+        <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+          <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
         </li>
         {{-- <li class="nav-item dropdown">
             <a class="nav-link" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -26,9 +26,9 @@
           <a class="nav-link" href="#">Contact</a>
         </li> --}}
       </ul>
-      <div class="navbar-buttons">
-        <button class="btn btn-outline-primary btn-sm mr-2">Profile</button>
-        <button class="btn btn-primary btn-sm">Logout</button>
+      <div class="navbar-buttons {{ request()->is('profile') ? 'active' : '' }}">
+        <a class="btn btn-outline-primary btn-sm mr-2"  href="{{ route('profile') }}">Profile</a>
+        <a class="btn btn-primary btn-sm" href="{{ route('logout') }}">Logout</a>
       </div>
     </div>
   </nav>
@@ -36,5 +36,5 @@
 
 
 @section('scripts')
-   
+
 @endsection
