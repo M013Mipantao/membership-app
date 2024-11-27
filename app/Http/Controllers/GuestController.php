@@ -180,7 +180,7 @@ class GuestController extends Controller
         }
     
         // Generate the QR code URL with the visit date range and the determined status
-        $code = "data=code:".$gencode.";name:". $validatedData['guests_name'].
+        $code = "data=code:".$gencode.";name:".  str_replace(' ', '%20', $validatedData['guests_name']).
                 ";visitdate:".$validatedData['startdate'].",".$validatedData['enddate'].
                 ";status:".$qrStatus;
     
@@ -239,7 +239,7 @@ class GuestController extends Controller
     : Carbon::parse($qrCode->startdate)->toFormattedDateString();
     
         // Sanitize guest name and duration to remove special characters
-        $sanitizedGuestName = preg_replace('/[^A-Za-z0-9\-]/', '_', str_replace(' ', '+', $guest_name));
+        $sanitizedGuestName = preg_replace('/[^A-Za-z0-9\-]/', '_',$guest_name);
         $sanitizedDuration = preg_replace('/[^A-Za-z0-9\-]/', '_', $duration);
     
         // Define the path for saving the QR code image in public/qr_codes directory

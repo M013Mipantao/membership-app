@@ -162,7 +162,7 @@ class QRCodeController extends Controller
     public function scanQrCode(Request $request)
     {
         $qrData = $request->input('data');
-        $decodedData = urldecode($qrData);
+        $decodedData = $qrData;
     
         Log::info('Decoded QR Data from request: ' . $decodedData);
     
@@ -181,7 +181,7 @@ class QRCodeController extends Controller
         }
     
         Log::info('Parsed fields: ', $parsedData);
-        $searchdata = url('/') . '/qr-code-scan?data=' . $decodedData;
+        $searchdata = url('/') . '/qr-code-scan?data=' . str_replace(' ', '%20', $decodedData) ;
         $qrCode = QrCode::where('qr_code', $searchdata ?? null)->first();
     
         if (!$qrCode) {
