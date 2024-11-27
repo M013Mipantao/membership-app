@@ -1,4 +1,5 @@
 @extends('layouts.single_page_ui')
+@include('partials.navbar_singlepage')
 
 @section('steps')
     @include('flows.steps')
