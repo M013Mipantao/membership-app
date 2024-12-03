@@ -55,13 +55,19 @@
             </div>
             @endif
 
-            <!-- Guest Name -->
             <div class="col-md-6">
+                <label for="member-name">Member Name:</label>
+                <input type="text" name="member_name" class="form-control" 
+                       value="{{ session('member')->members_name }}" readonly>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <!-- Guest Name -->
+            <div class="col-md-12">
                 <label for="guests_name">Guest Name:</label>
                 <input id="guests_name" type="text" name="guests_name" class="form-control" placeholder="Guest Name" required>
             </div>
         </div>
-
         <!-- Row 2 -->
         <div class="row mt-3">
             
