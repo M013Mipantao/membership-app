@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Helpers\ApiHelper;
 
 class MemberController extends Controller
 {
@@ -68,7 +69,14 @@ class MemberController extends Controller
         return redirect()->route('members.create')->with('success', 'Member registered successfully!');
     }
 
-   
-    
+    public function apifetch_member($memberId){
+        try {
+            // $memberId = '00341-BIC-100-00';
+            $memberDetails = ApiHelper::getMemberDetails($memberId);
+            dd($memberDetails); // Debug or handle the data as needed
+        } catch (\Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
 }
 

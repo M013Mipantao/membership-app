@@ -13,6 +13,8 @@
         border: 2px solid #ddd; /* Optional: Adds a border */
     }
 
+    
+
 </style>
 <div class="container mt-5">
     <div class="row">
@@ -46,15 +48,11 @@
                             <strong>Membership ID:</strong> {{ $member['membership_id'] ?? 'Not Assigned' }}
                         </li>
                         <li class="list-group-item">
-                            <strong>Gender:</strong> {{ $member['gender'] ?? 'N/A' }}
-                        </li>
-                        <li class="list-group-item">
                             <strong>Date of Birth:</strong> 
                             {{ \Carbon\Carbon::parse($member['date_of_birth'])->format('F j, Y') ?? 'N/A' }}
                         </li>
                         <li class="list-group-item">
-                            <strong>Balance:</strong> 
-                            0.00
+                            <strong>Balance:</strong> {{ (session('api'))[0]['walBal'] }}
                         </li>
                     </ul>
                     <button class="btn btn-primary mt-3">Edit Profile</button>
@@ -65,5 +63,5 @@
 </div>
 
 <!-- Debug Session Data -->
-{{-- <pre>{{ print_r(session()->all()) }}</pre> --}}
+
 @endsection

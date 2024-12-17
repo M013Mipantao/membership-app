@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('members_name');
             $table->string('members_email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('gender');
             $table->string('date_of_birth');
             $table->string('user_id')->nullable();
             $table->string('status');

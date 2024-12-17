@@ -1,0 +1,32 @@
+.timeline {
+    position: relative;
+    padding: 20px 0;
+  }
+  
+  .timeline-item {
+    display: flex;
+    position: relative;
+    padding-left: 40px;
+  }
+  
+  .timeline-item-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 20px;
+  }
+  
+  .timeline-item-content {
+    flex: 1;
+    padding-left: 15px;
+  }
+  
+  .timeline-item-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .timeline-item-content p {
+    margin: 5px 0;
+  }
+  

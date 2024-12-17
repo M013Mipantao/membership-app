@@ -21,7 +21,9 @@ class ProfileController extends Controller
     {
 
     $member = session('member'); // Assuming member is already in session
-    return view('single_page.profile', compact('member'));
+    $api = session('api'); // Assuming member is already in session
+
+    return view('single_page.profile', compact('member','api'));
 
     }
 

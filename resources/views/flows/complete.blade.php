@@ -1,10 +1,6 @@
 @extends('layouts.single_page_ui')
 @include('partials.navbar_singlepage')
 
-@section('steps')
-    @include('flows.steps')
-@endsection
-
 @section('content')
 <div class="container text-center mb-5">
      {{-- <pre>{{ print_r(session()->all()) }}</pre> --}}

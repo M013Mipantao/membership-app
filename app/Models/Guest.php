@@ -25,6 +25,11 @@ class Guest extends Model
 
     public function qrCode()
     {
-        return $this->hasMany(QrCode::class,'fk_member_guest_qr_id');
+        return $this->hasMany(QrCode::class,'fk_member_guest_qr_id','id');
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class, 'fk_member_guest_id', 'id');
     }
 }

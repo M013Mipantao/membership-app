@@ -10,6 +10,7 @@ use App\Models\OTP;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Mail\OtpMail;
+use App\Helpers\ApiHelper;
 
 class Login_Controller extends Controller
 {
@@ -19,71 +20,138 @@ class Login_Controller extends Controller
         return view('flows.login');
     }
 
-    // AJAX call to validate membership ID
-    public function validateMembership(Request $request)
-    {
+    public function validateMembership(Request $request){
         // Validate membership_id
         $request->validate([
-            'membership_id' => 'required|exists:members,membership_id',
+            'membership_id' => 'required',
         ]);
-
-        // Find the member
-        $member = Member::where('membership_id', $request->membership_id)
-            ->where('status', 'Active')
-            ->first();
-
-        if ($member) {
-            // Find associated user
-            $user = User::find($member->user_id);
-
-            if (is_null($user->password) || empty($user->password)) {
-                // First time, no password exists, redirect to password creation
+    
+        // Fetch member details via API
+        try {
+            $apiResponse = ApiHelper::getMemberDetails($request->membership_id);
+    
+            if (!$apiResponse || !isset($apiResponse['msg'][0])) {
                 return response()->json([
-                    'success' => true,
-                    'first_time' => true
-                ]);
-            } else {
-                // Password exists, show password input for validation
-                return response()->json([
-                    'success' => true,
-                    'first_time' => false
+                    'success' => false,
+                    'message' => 'Membership ID is invalid or inactive in the API.'
                 ]);
             }
-        } else {
+    
+            // Extract API data
+            $apiData = $apiResponse['msg'][0];
+    
+            // Check if the member exists locally
+            $member = Member::where('membership_id', $request->membership_id)
+                ->where('status', 'Active')
+                ->first();
+    
+            if (!$member) {
+                // If the member does not exist locally, insert the data from the API
+     
+                // Create a new User record for the member (password will be set later)
+                $newUser = new User();
+                $newUser->name = $apiData['memberName']; // Link user to member
+                $newUser->password = ''; // Default password to empty
+                $newUser->type = 'Member'; // Default password to empty
+                $newUser->status = 'Active'; // Default password to empty
+                $newUser->save();
+
+
+                // Create a new Member record from the API response
+                $newMember = new Member();
+                $newMember->membership_id = $apiData['memberNo']; // API member ID
+                $newMember->status = 'Active'; // Assuming active status, adjust as needed
+                $newMember->members_name = $apiData['memberName']; // Full name
+                $newMember->user_id = $newUser->id; // Full name
+                // $newMember->address = $apiData['address'][0]['address']; // First address entry
+                $newMember->date_of_birth = $apiData['birthDate']; // Birth date
+                $newMember->members_email = $apiData['email']; // Email
+                // $newMember->phone = implode(', ', $apiData['phones']); // Combine phone numbers
+                // Add other fields from the API response if needed
+                $newMember->save();
+   
+    
+                // After inserting new member and user, proceed to password creation
+                return response()->json([
+                    'success' => true,
+                    'first_time' => true, // Indicating that this is the first time and requires password setup
+                ]);
+            } else {
+                // If member exists locally, proceed to password validation
+    
+                // Find associated user
+                $user = User::find($member->user_id);
+    
+                // Check if the password is already set
+                if (is_null($user->password) || empty($user->password)) {
+                    // No password exists, need to create a password
+                    return response()->json([
+                        'success' => true,
+                        'first_time' => true // Indicating that the user needs to create a password
+                    ]);
+                } else {
+                    // Password exists, show password input for validation
+                    return response()->json([
+                        'success' => true,
+                        'first_time' => false // Proceed with password validation
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Membership ID is invalid.'
+                'message' => 'An error occurred during the API validation: ' . $e->getMessage()
             ]);
         }
     }
+     
 
-    // Login user after password validation
+
     public function login(Request $request)
     {
-        // Validate password
+        // Validate input
         $request->validate([
             'membership_id' => 'required|exists:members,membership_id',
             'password' => 'required',
         ]);
 
-        // Find the member
-        $member = Member::where('membership_id', $request->membership_id)
-            ->where('status', 'Active')
-            ->first();
+        // Fetch member details from API for validation
+        try {
+            $apiResponse = ApiHelper::getMemberDetails($request->membership_id);
 
-        // Find the user associated with the member
-        $user = User::find($member->user_id);
+            if (!$apiResponse) {
+                return back()->withErrors(['membership_id' => 'Membership ID is invalid or inactive in the API.']);
+            }
 
-        if (Hash::check($request->password, $user->password)) {
-            // Password is valid, log the user in
-            Auth::login($user);
-            $request->session()->put('member', $member);
-            $request->session()->regenerate();
+            // Find the member in the local database
+            $member = Member::where('membership_id', $request->membership_id)
+                ->where('status', 'Active')
+                ->first();
 
-            return redirect()->intended('member_registration/form');
-        } else {
-            // Invalid password
-            return back()->withErrors(['password' => 'Invalid password.']);
+            if (!$member) {
+                return back()->withErrors(['membership_id' => 'Member not found or inactive in the local database.']);
+            }
+
+            // Find the user associated with the member
+            $user = User::find($member->user_id);
+
+            // Check if the password is valid
+            if (Hash::check($request->password, $user->password)) {
+                // Password is valid, log the user in
+                Auth::login($user);
+                $request->session()->put('member', $member);
+                $request->session()->put('api', $apiResponse['msg'] );
+                $request->session()->regenerate();
+
+                // return redirect()->intended('member_registration/form');
+                return redirect()->route('dashboard2');
+            } else {
+                // Invalid password
+                return back()->withErrors(['password' => 'Invalid password.']);
+            }
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['membership_id' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
 
@@ -206,17 +274,27 @@ class Login_Controller extends Controller
             // Save the new password for the user
             $user->password = Hash::make(session('temp_password')); // Assuming you stored temp_password in the session
             $user->save();
+
+            $apiResponse = ApiHelper::getMemberDetails($membership_id);
+
+            if (!$apiResponse) {
+                return back()->withErrors(['membership_id' => 'Membership ID is invalid or inactive in the API.']);
+            }
+
     
             // Log the user in
             Auth::login($user);
             $request->session()->put('member', $member);
+            $request->session()->put('api', $apiResponse['msg'] );
             $request->session()->regenerate();
     
             // Clear the OTP record from the database after successful verification
             $otpRecord->delete();
     
             // Redirect to the main page
-            return redirect()->intended('member_registration/form');
+            // return redirect()->intended('member_registration/form');
+            return redirect()->intended('dashboard2');
+
         }
     
         // If OTP is invalid or has expired, redirect back with an error

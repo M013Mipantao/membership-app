@@ -138,12 +138,20 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h5>Consent Form</h5>
-            <p class="text-gray-700">
+            {{-- <p class="text-gray-700">
                 I, 
                 <strong>{{ $data['member']->members_name }}</strong>
                 , hereby give permission for the guest, 
                 <strong id="displayArea"></strong>
                 , to use my account balance.
+            </p> --}}
+
+            <p class="text-gray-700" style="text-indent: 40px">
+                I, <strong>{{ $data['member']->members_name }}</strong>, hereby authorize my guest, <strong id="displayArea"></strong>, to utilize my Balesin Key wallet credit for any transaction within Balesin Island Club. I acknowledge that the security and confidentiality of my QR code details are my sole responsibility and I agree to hold Alphaland Balesin Island Club, Inc., its officers, directors, stockholders, employees, agents, including their assigns, representatives and successors-in-interest, free and harmless from any liabilities, claims, or damages arising from any unauthorized or improper use of my wallet credit or QR code by my authorized guest or any third party.
+            </br>
+            </p>
+            <p class="text-gray-700" style="text-indent: 40px">
+            I understand and accept full responsibility for all transactions made by my authorized guest or any third party. Further, I waive the right to dispute such transactions involving my Balesin Key wallet credit or QR code and agree that all transactions will be considered final and binding.
             </p>
         <button id="agreeTermsBtn" class="btn btn-success">I Agree</button>
     </div>

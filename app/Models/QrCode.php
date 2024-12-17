@@ -32,7 +32,7 @@ class QrCode extends Model
 
     public function guest()
     {
-        return $this->belongsTo(Guest::class, 'fk_member_guest_qr_id');
+        return $this->belongsTo(Guest::class, 'fk_member_guest_qr_id','id');
     }
 
 }

@@ -14,7 +14,6 @@ class Member extends Model
             'membership_id',
             'members_name',
             'members_email',
-            'gender',
             'date_of_birth',
             'status',
             'user_id'
@@ -37,5 +36,8 @@ class Member extends Model
             return $this->belongsTo(User::class, 'user_id');
         }
     
-    
+        public function guests()
+        {
+            return $this->hasMany(Guest::class, 'fk_member_guest_id', 'id');
+        }
 }

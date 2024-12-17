@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Balesin Wallet</title>
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">   
     <!-- Custom fonts for this template-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    {{-- <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.css"> --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('sb-admin-2/css/navbar.css') }}" rel="stylesheet">
     <link href="{{ asset('sb-admin-2/css/wave.css') }}" rel="stylesheet">
+    <!-- Include Daterangepicker CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet" />
     @yield('styles') <!-- For additional styles if needed -->
     <style>
         
@@ -25,6 +30,9 @@
         right: 0;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 1rem;
+        display: none;
+      }
+      .welcome-section{
         display: none;
       }
 
@@ -146,11 +154,11 @@
         /* Modal content box */
         .modal-content {
             background-color: #fff;
-            margin: 15% auto; /* 15% from the top and centered */
+            margin: 12% auto; /* 15% from the top and centered */
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 500px; /* Max width of the modal */
+            max-width: 700px; /* Max width of the modal */
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             position: relative;
@@ -196,7 +204,14 @@
     <!-- Scripts -->
     <script src="{{ asset('sb-admin-2/vendor/jquery/jquery.min.js') }}"></script>
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-    <script src="{{ asset('sb-admin-2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    {{-- <script src="{{ asset('sb-admin-2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    {{-- <script src="{{ asset('sb-admin-2/vendor/bootstrap/js/sb-admin-2.min.js') }}"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+
     <!-- Include the QR Code library -->
     @stack('scripts')
     

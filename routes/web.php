@@ -131,3 +131,15 @@ Route::get('/test-imagick', [GuestController::class, 'testImagick']);
 Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth')->name('profile');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/api/{member_id}', [MemberController::class, 'apifetch_member'])->name('api');
+Route::get('/transactionapi/{member_id}', [DashboardController::class, 'transaction'])->name('transactionapi');
+
+//delet
+// Route::patch('/qr-codes/{id}/delete', [DashboardController::class, 'destroy']);
+Route::patch('/qr-codes/{id}/status', [DashboardController::class, 'updateStatus']);
+Route::get('/qr-codes', [DashboardController::class, 'getQrCodes'])->name('qr-codes.list');
+Route::get('/dashboard2', [DashboardController::class, 'dashboard2'])->name('dashboard2');
+
+Route::get('/transactions-tab', [DashboardController::class, 'index'])->name('transactions-tab');
+Route::get('/qr-codes-tab', [DashboardController::class, 'index'])->name('qr-codes-tab');
+

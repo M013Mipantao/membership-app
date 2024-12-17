@@ -14,8 +14,12 @@
 @else
     <p>Please log in to view your profile.</p>
 @endif
-
-<div class="card card-waves mb-4 mt-5">
+ <!-- Back Link -->
+ <a href="{{route('dashboard2')}}" style="cursor: pointer; color: #007bff;">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+<div class="card card-waves mb-4 mt-3 welcome-section">
+    
     <div class="card-body p-5">
         <div class="row align-items-center justify-content-between">
             <div class="col">

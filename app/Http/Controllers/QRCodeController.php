@@ -222,8 +222,8 @@ class QRCodeController extends Controller
             }
         }
     
-        $formattedStart = $start->format('F j, Y g:i A');
-        $formattedEnd = $end->format('F j, Y g:i A');
+        $formattedStart = $start->format('F j, Y');
+        $formattedEnd = $end->format('F j, Y');
     
         if ($qrStatus === 'Expired') {
             $qrCode->status = $qrStatus;
