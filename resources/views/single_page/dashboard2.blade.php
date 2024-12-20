@@ -96,9 +96,9 @@
 
 <div class="balance-card">
     <div class="balance-title">Current Balance</div>
-    {{-- <pre>{{print_r(session()->all())}}</pre> --}}
+    {{-- <pre>{{print_r(session('member'))}}</pre> --}}
     <div class="balance-amount">₱ {{ number_format((float)(session('api'))[0]['walBal'], 2, '.', '') }}</div>
-    <div class="balance-footer">Membership ID: {{ print_r(session('member')->membership_id)}}</div>
+    <div class="balance-footer">Membership ID: {{ session('api')[0]['memberNo'] }}</div>
 </div>
 
 <div class="container mt-5">
@@ -164,6 +164,6 @@
 
 @push('scripts')
 <script>
-    // Custom scripts if needed
+
 </script>
 @endpush

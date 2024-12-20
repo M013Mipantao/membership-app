@@ -165,40 +165,42 @@
                         <div class="card-body">
                             @php
                                 $transactions = $data['transactions']['msg'] ?? [];
+                                $transactions = is_string($transactions) ? json_decode($transactions, true) : $transactions;
+
                             @endphp
                 
-                @if(empty($transactions))
-                <p class="text-center text-muted">No transactions available for the selected range.</p>
-            @else
-                <div class="notification-panel">
-                    @foreach(json_decode($transactions, true) as $transaction)
-                        <div class="notification-item mb-3">
-                            <div class="d-flex align-items-center">
-                                <div class="notification-icon">
-                                    @if($transaction['type'] === 'Payment')
-                                    <i class="fas fa-check-circle text-success"></i>
-                                    @elseif($transaction['type'] === 'Refund')
-                                        <i class="fas fa-times-circle text-danger"></i>
-                                    @elseif($transaction['type'] === 'Entitlement')
-                                        <i class="fas fa-gift text-warning"></i>
-                                    @elseif($transaction['type'] === 'Utilized')
-                                        <i class="fas fa-cart-arrow-down text-info"></i>
-                                    @elseif($transaction['type'] === 'OB' || $transaction['type'] === 'CB')
-                                        <i class="fas fa-balance-scale text-primary"></i>
-                                    @else
-                                        <i class="fas fa-info-circle text-secondary"></i>
-                                    @endif
-                                
+                            @if(empty($transactions))
+                            <p class="text-center text-muted">No transactions available for the selected range.</p>
+                            @else
+                                <div class="notification-panel">
+                                    @foreach($transactions as $transaction)
+                                        <div class="notification-item mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="notification-icon">
+                                                    @if($transaction['type'] === 'Payment')
+                                                    <i class="fas fa-check-circle text-success"></i>
+                                                    @elseif($transaction['type'] === 'Refund')
+                                                        <i class="fas fa-times-circle text-danger"></i>
+                                                    @elseif($transaction['type'] === 'Entitlement')
+                                                        <i class="fas fa-gift text-warning"></i>
+                                                    @elseif($transaction['type'] === 'Utilized')
+                                                        <i class="fas fa-cart-arrow-down text-info"></i>
+                                                    @elseif($transaction['type'] === 'OB' || $transaction['type'] === 'CB')
+                                                        <i class="fas fa-balance-scale text-primary"></i>
+                                                    @else
+                                                        <i class="fas fa-info-circle text-secondary"></i>
+                                                    @endif
+                                                
+                                                </div>
+                                                <div class="notification-content ml-3">
+                                                    <p class="mb-1">{{ $transaction['particular'] }} - {{ number_format($transaction['value'], 2) }}</p>
+                                                    <span class="text-xs text-gray-500">{{$transaction['date']}} -  {{\Carbon\Carbon::parse($transaction['date'])->diffForHumans() }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                                <div class="notification-content ml-3">
-                                    <p class="mb-1">{{ $transaction['particular'] }} - {{ number_format($transaction['value'], 2) }}</p>
-                                    <span class="text-xs text-gray-500">{{$transaction['date']}} -  {{\Carbon\Carbon::parse($transaction['date'])->diffForHumans() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
+                            @endif
             
                         </div>
                     </div>
@@ -208,102 +210,100 @@
         </div>
 
 
-<!-- QR Codes Tab -->
-<div class="tab-pane fade" id="qr-codes" role="tabpanel" aria-labelledby="qr-codes-tab">
-    <div class="row">
-        <!-- Mobile View QR Codes Section (Visible only on mobile) -->
-        <div class="col-12 qr-codes-section d-block d-sm-none">
-            <div class="card b-1 mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">QR Codes</h6>
-                </div>
-                <div class="card-body">
-                    @php
-                        $qrCodes = $data['qr_codes'] ?? [];
-                    @endphp
+        <!-- QR Codes Tab -->
+        <div class="tab-pane fade" id="qr-codes" role="tabpanel" aria-labelledby="qr-codes-tab">
+            <div class="row">
+                <!-- Mobile View QR Codes Section (Visible only on mobile) -->
+                <div class="col-12 qr-codes-section d-block d-sm-none">
+                    <div class="card b-1 mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">QR Codes</h6>
+                        </div>
+                        <div class="card-body">
+                            @php
+                                $qrCodes = $data['qr_codes'] ?? [];
+                            @endphp
 
-                    @if(empty($qrCodes))
-                        <p class="text-center text-muted">No active QR codes available.</p>
-                    @else
-                    <ul class="list-group list-group-flush border">
-                        @foreach($qrCodes as $qrCode)
-                            <li class="list-group-item d-flex justify-content-between align-items-start text-muted border-bottom">
-                                <div class="list-content">
-                                    <strong>Guest:</strong> {{ $qrCode->guest->guests_name ?? 'N/A' }} <br>
-                                    <strong>Visit:</strong> {{ $qrCode->startdate }} - {{ $qrCode->enddate }} <br>
-                                    <strong>Status:</strong> {{ $qrCode->status }} <br>
-                                </div>
-                                <div class="list-actions d-flex flex-grow-1">
-                                    <button class="btn btn-danger flex-fill w-100 h-100 d-flex flex-column align-items-center justify-content-center" data-id="{{ $qrCode->id }}" >
-                                        <i class="fa fa-trash mb-1"></i>
-                                        <span>Delete</span>
-                                    </button>
-                                    <a href="{{ $qrCode->qr_code }}" class="btn btn-primary flex-fill w-100 h-100 d-flex flex-column align-items-center justify-content-center" target="_blank">
-                                        <i class="fa fa-download mb-1"></i>
-                                        <span>Download</span>
-                                    </a>
-                                </div>
-                                   <!-- Right Icon (Floating in the middle right corner) -->
-                                   <i class="fa fa-angle-left text-xs text-gray-500 position-absolute top-50 end-0 translate-middle-y"></i>
-                            </li>
-                        
-                        @endforeach
-                    </ul>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Web View QR Codes Section (Visible only on desktop and larger screens) -->
-        <div class="col-12 qr-codes-section-web d-none d-sm-block">
-            <div class="card mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">QR Codes</h6>
-                </div>
-                <div class="card-body">
-                    @php
-                        $qrCodes = $data['qr_codes'] ?? [];
-                    @endphp
-
-                    @if(empty($qrCodes))
-                        <p class="text-center text-muted">No active QR codes available.</p>
-                    @else
-                        <table id="qrCodesTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>Guest</th>
-                                    <th>Visit Dates</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                            @if(empty($qrCodes) || count($qrCodes) === 0)
+                                <p class="text-center text-muted">No active QR codes available.</p>
+                            @else
+                            <ul class="list-group list-group-flush border">
                                 @foreach($qrCodes as $qrCode)
-                                    <tr>
-                                        <td>{{ $qrCode->guest->guests_name ?? 'N/A' }}</td>
-                                        <td>{{ $qrCode->startdate }} - {{ $qrCode->enddate }}</td>
-                                        <td>{{ $qrCode->status }}</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-danger btn-sm" data-id="{{ $qrCode->id }}" >
-                                                <i class="fa fa-trash"></i> Delete
+                                    <li class="list-group-item d-flex justify-content-between align-items-start text-muted border-bottom">
+                                        <div class="list-content">
+                                            <strong>Guest:</strong> {{ $qrCode->guest->guests_name ?? 'N/A' }} <br>
+                                            <strong>Visit:</strong> {{ $qrCode->startdate }} - {{ $qrCode->enddate }} <br>
+                                            <strong>Status:</strong> {{ $qrCode->status }} <br>
+                                        </div>
+                                        <div class="list-actions d-flex flex-grow-1">
+                                            <button class="btn btn-danger flex-fill w-100 h-100 d-flex flex-column align-items-center justify-content-center" data-id="{{ $qrCode->id }}" >
+                                                <i class="fa fa-trash mb-1"></i>
+                                                <span>Delete</span>
                                             </button>
-                                            <a href="{{ $qrCode->qr_code }}" class="btn btn-primary btn-sm" target="_blank">
-                                                <i class="fa fa-download"></i> Download
+                                            <a href="{{ $qrCode->qr_code }}" class="btn btn-primary flex-fill w-100 h-100 d-flex flex-column align-items-center justify-content-center" target="_blank">
+                                                <i class="fa fa-download mb-1"></i>
+                                                <span>Download</span>
                                             </a>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                        <!-- Right Icon (Floating in the middle right corner) -->
+                                        <i class="fa fa-angle-left text-xs text-gray-500 position-absolute top-50 end-0 translate-middle-y"></i>
+                                    </li>
+                                
                                 @endforeach
-                            </tbody>
-                        </table>
-                    @endif
+                            </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Web View QR Codes Section (Visible only on desktop and larger screens) -->
+                <div class="col-12 qr-codes-section-web d-none d-sm-block">
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">QR Codes</h6>
+                        </div>
+                        <div class="card-body">
+                            @php
+                            $qrCodes = $data['qr_codes'] ?? [];
+                        @endphp
+                        
+                        @if(!is_array($qrCodes) || count($qrCodes) === 0)
+                            <p class="text-center text-muted">No active QR codes available.</p>
+                        @else                        
+                                <table id="qrCodesTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Guest</th>
+                                            <th>Visit Dates</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($qrCodes as $qrCode)
+                                            <tr>
+                                                <td>{{ $qrCode->guest->guests_name ?? 'N/A' }}</td>
+                                                <td>{{ $qrCode->startdate }} - {{ $qrCode->enddate }}</td>
+                                                <td>{{ $qrCode->status }}</td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-danger btn-sm" data-id="{{ $qrCode->id }}" >
+                                                        <i class="fa fa-trash"></i> Delete
+                                                    </button>
+                                                    <a href="{{ $qrCode->qr_code }}" class="btn btn-primary btn-sm" target="_blank">
+                                                        <i class="fa fa-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-
-        
+    
     </div>
 </div>
 
@@ -327,54 +327,66 @@ $(document).ready(function () {
             const from = picker.startDate.format('YYYY-MM-DD');
             const to = picker.endDate.format('YYYY-MM-DD');
 
-        // AJAX request to fetch filtered transactions
-        $.ajax({
-            url: "{{ route('transactionapi', ['member_id' => session('member')->id]) }}",
-            type: 'GET',
-            data: { from, to },
-            success: function (response) {
-                if (response.error) {
-                    // Display error message
-                    $('.transactions-section .card-body').html(`<p class="text-center text-danger">${response.error}</p>`);
-                } else if (response.transactions && response.transactions.msg) {
-                    // Parse transactions JSON string
-                    const transactions = JSON.parse(response.transactions.msg);
+            // AJAX request to fetch filtered transactions
+            $.ajax({
+                url: "{{ route('transactionapi', ['member_id' => session('member')->id]) }}",
+                type: 'GET',
+                data: { from, to },
+                success: function (response) {
+                    if (response.error) {
+                        // Display error message
+                        $('.transactions-section .card-body').html(
+                            `<p class="text-center text-danger">${response.error}</p>`
+                        );
+                    } else if (response.transactions && response.transactions.msg) {
+                        // Check if msg is already an object or array
+                        const transactions =
+                            typeof response.transactions.msg === 'string'
+                                ? JSON.parse(response.transactions.msg)
+                                : response.transactions.msg;
 
-                    if (transactions.length > 0) {
-                        // Generate HTML for transactions
-                        let transactionsHtml = '';
-                        transactions.forEach(transaction => {
-                            transactionsHtml += `
-                                <div class="notification-item mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="notification-icon">
-                                            ${getTransactionIcon(transaction.type)}
+                        if (transactions.length > 0) {
+                            // Generate HTML for transactions
+                            let transactionsHtml = '';
+                            transactions.forEach(transaction => {
+                                transactionsHtml += `
+                                    <div class="notification-item mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="notification-icon">
+                                                ${getTransactionIcon(transaction.type)}
+                                            </div>
+                                            <div class="notification-content ml-3">
+                                                <p class="mb-1">${transaction.particular} - ${parseFloat(transaction.value).toFixed(2)}</p>
+                                                <span class="text-xs text-gray-500">${transaction.date} - ${moment(transaction.date).fromNow()}</span>
+                                            </div>
                                         </div>
-                                        <div class="notification-content ml-3">
-                                            <p class="mb-1">${transaction.particular} - ${parseFloat(transaction.value).toFixed(2)}</p>
-                                            <span class="text-xs text-gray-500">${transaction.date} - ${moment(transaction.date).fromNow()}</span>
-                                        </div>
-                                    </div>
-                                </div>`;
-                        });
-                        // Update the UI with transactions
-                        $('.transactions-section .card-body').html(transactionsHtml);
+                                    </div>`;
+                            });
+                            // Update the UI with transactions
+                            $('.transactions-section .card-body').html(transactionsHtml);
+                        } else {
+                            // No transactions for the selected range
+                            $('.transactions-section .card-body').html(
+                                '<p class="text-center text-muted">No transactions available for the selected range.</p>'
+                            );
+                        }
                     } else {
-                        // No transactions for the selected range
-                        $('.transactions-section .card-body').html('<p class="text-center text-muted">No transactions available for the selected range.</p>');
+                        // Handle case with no transactions
+                        $('.transactions-section .card-body').html(
+                            '<p class="text-center text-muted">No transactions available for the selected range.</p>'
+                        );
                     }
-                } else {
-                    // Handle case with no transactions
-                    $('.transactions-section .card-body').html('<p class="text-center text-muted">No transactions available for the selected range.</p>');
+                },
+                error: function (xhr) {
+                    // Handle AJAX errors
+                    console.error('Error fetching transactions:', xhr.responseText);
+                    $('.transactions-section .card-body').html(
+                        '<p class="text-center text-danger">An error occurred while fetching transactions.</p>'
+                    );
                 }
-            },
-            error: function (xhr) {
-                // Handle AJAX errors
-                console.error('Error fetching transactions:', xhr.responseText);
-                $('.transactions-section .card-body').html('<p class="text-center text-danger">An error occurred while fetching transactions.</p>');
-            }
+            });
         });
-    });
+
 
     // Helper function to get the appropriate icon for a transaction type
     function getTransactionIcon(type) {
@@ -488,27 +500,42 @@ $(document).ready(function () {
 
     // Initial call to set up swipe effects on page load
     initializeSwipeEffects();
-    document.addEventListener('DOMContentLoaded', () => {
-        // Get the current path from the URL
-        const path = window.location.pathname;
-
-        // Determine the active tab based on the URL
-        let activeTabId;
-        if (path.includes('/transactions')) {
-        activeTabId = 'transaction-tab';
-        } else if (path.includes('/qr_codes')) {
-        activeTabId = 'qr-code-tab';
-        }
-
-        if (activeTabId) {
-        // Activate the corresponding tab
-        const activeTab = document.getElementById(activeTabId);
-        const tab = new bootstrap.Tab(activeTab);
-        tab.show();
-        }
-    });
-
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pathToTab = {
+        '/transactions-tab': 'transactions-tab',
+        '/qr-codes-tab': 'qr-codes-tab'
+    };
+
+    const currentPath = window.location.pathname.replace(/\/$/, '');
+    const activeTabId = pathToTab[currentPath];
+
+    if (activeTabId) {
+        const activeTabTrigger = document.querySelector(`[id="${activeTabId}"]`);
+
+        if (activeTabTrigger) {
+            // Activate the tab
+            const tab = new bootstrap.Tab(activeTabTrigger);
+            tab.show();
+
+            // Update the active tab content
+            const activeContentId = activeTabTrigger.getAttribute('href').replace('#', '');
+            document.querySelectorAll('.tab-pane').forEach(tabPane => {
+                tabPane.classList.remove('show', 'active');
+            });
+            document.getElementById(activeContentId).classList.add('show', 'active');
+        } else {
+            console.error(`Tab trigger with ID "${activeTabId}" not found.`);
+        }
+    } else {
+        console.warn('No tab matches the current path:', currentPath);
+    }
+});
+
+
+
+
 
 
     

@@ -8,22 +8,45 @@
 
     <hr class="sidebar-divider my-0">
     
-    <li class="nav-item active">
+    {{-- <li class="nav-item active">
         <a class="nav-link" href="{{route('admin.dashboard')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
-        </a>
-        <a class="nav-link" href="{{route('admin.dashboard')}}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Add Users</span>
-        </a>
-        <a class="nav-link" href="{{route('admin.dashboard')}}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Member List</span>
         </a>
         <a class="nav-link" href="{{route('admin.transaction')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Trasactions</span>
         </a>
-    </li>
+        <a class="nav-link" href="{{route('admin.dashboard')}}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Controls</span>
+        </a>
+        <a class="nav-link" href="{{route('admin.dashboard')}}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>List</span>
+        </a>
+    
+    </li> --}}
+
+        <!-- Nav Items -->
+        <li class="nav-item active">
+            <a class="nav-link" href="{{ route('admin.dashboard') }}">
+                <i class="fas fa-home"></i> <!-- Dashboard Icon -->
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link" href="">
+                <i class="fas fa-exchange-alt"></i> <!-- Transactions Icon -->
+                <span>Transactions</span>
+            </a>
+            <a class="nav-link" href="{{route('controls')}}">
+                <i class="fas fa-cogs"></i> <!-- Controls Icon -->
+                <span>Controls</span>
+            </a>
+            <a class="nav-link" href="">
+                <i class="fas fa-list"></i> <!-- List Icon -->
+                <span>List</span>
+            </a>
+        </li>
 </ul>
+
+

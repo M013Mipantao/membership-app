@@ -7,6 +7,9 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesResources;
 use App\Models\User;
+use App\Models\Member;
+use App\Models\Guest;
+use App\Models\QrCode;
 
 
 class Controller extends BaseController
@@ -18,12 +21,22 @@ class Controller extends BaseController
         $users = User::all();  // Fetch all users, you can also paginate here.
         return view('admin.user_list', compact('users'));
     }
-
+    
     public function dashboard()
     {
-        $users = User::all();  // Fetch all users, you can also paginate here.
-        return view('admin.dashboard', compact('users'));
+        // Fetch counts for dashboard metrics
+        $totalMember = Member::count(); // Total members count
+        $activeMember = Member::where('status', 'active')->count(); // Active members count
+        $totalGuest = Guest::count(); // Total guests count
+        $activeQR = QrCode::where('status', 'active')->count(); // Active QR codes count
+    
+        // Fetch users for any additional needs
+        $users = User::all(); // Optional: You can paginate if needed
+    
+        // Pass metrics to the view
+        return view('admin.dashboard', compact('users', 'totalMember', 'activeMember', 'totalGuest', 'activeQR'));
     }
+    
 
     public function create()
     {

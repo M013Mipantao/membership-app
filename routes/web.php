@@ -142,4 +142,11 @@ Route::get('/dashboard2', [DashboardController::class, 'dashboard2'])->name('das
 
 Route::get('/transactions-tab', [DashboardController::class, 'index'])->name('transactions-tab');
 Route::get('/qr-codes-tab', [DashboardController::class, 'index'])->name('qr-codes-tab');
+Route::get('/admin/control', [AdminController::class, 'controls'])->name('controls');
 
+
+Route::get('admin/member', [AdminController::class, 'create'])->name('admin.addMember');
+Route::get('admin/guest', [AdminController::class, 'store'])->name('admin.addGuest');
+Route::get('admin/forget-password', [AdminController::class, 'create'])->name('admin.forgetPassword');
+Route::get('admin/resend-qr', [AdminController::class, 'store'])->name('admin.resendQrCode');
+Route::get('admin/help', [AdminController::class, 'store'])->name('admin.help');

@@ -18,7 +18,7 @@ class DashboardController extends Controller
             $data = [];
     
             // Fetch the logged-in member's ID from the session
-            $memberId = session('member')->id ?? '00001-BIC-000-00'; // Use a default ID for testing if session is null
+            $memberId = session('member')->id;
     
             // Get the current month's start and end dates
             $from = Carbon::now()->startOfMonth()->format('Y-m-d');
@@ -45,6 +45,7 @@ class DashboardController extends Controller
                 ->get();
             // Add QR codes to data
             $data['qr_codes'] = $qrCodes;
+            // dd($data);
     
         } catch (\Exception $e) {
             // Handle errors gracefully
@@ -62,7 +63,7 @@ class DashboardController extends Controller
             $response = [];
     
             // Fetch the logged-in member's ID from the session
-            $memberId = session('member')->id;
+            $memberId = session('member')->membership_id;
             // $memberId = '00001-BIC-000-00';
     
             // Get date range from request

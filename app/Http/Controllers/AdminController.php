@@ -59,4 +59,9 @@ class AdminController extends Controller
 
         return redirect()->route('admin.create')->with('success', 'Admin created successfully.');
     }
+
+    public function controls(){
+        $users = User::all(); // Assuming users exist to associate with the admin
+        return view('admin.controls', compact('users'));
+    }
 }
