@@ -100,7 +100,7 @@ class Login_Controller extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred during the API validation: ' . $e->getMessage()
+                'message' => 'The provided membership ID does not exist. Please verify and try again.'
             ]);
         }
     }
