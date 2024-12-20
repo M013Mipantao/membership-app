@@ -264,12 +264,12 @@
                         </div>
                         <div class="card-body">
                             @php
-                            $qrCodes = $data['qr_codes'] ?? [];
-                        @endphp
-                        
-                        @if(!is_array($qrCodes) || count($qrCodes) === 0)
-                            <p class="text-center text-muted">No active QR codes available.</p>
-                        @else                        
+                                $qrCodes = $data['qr_codes'] ?? [];
+                            @endphp
+
+                            @if(empty($qrCodes) || count($qrCodes) === 0)
+                                <p class="text-center text-muted">No active QR codes available.</p>
+                            @else
                                 <table id="qrCodesTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
